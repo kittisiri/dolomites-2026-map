@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+<title>The Dolomites · 6–11 กันยายน 2026 — แผนที่ทริป</title>
+<meta name="description" content="แผนที่ทริป Dolomites 6–11 ก.ย. 2026 — ที่พัก เส้นทางเดินป่า เส้นทางขับรถ และกฎการเข้าถึงปี 2026 ที่ต้องจองล่วงหน้า">
+<meta name="color-scheme" content="dark">
+<link rel="stylesheet" href="assets/leaflet.css">
+<link rel="stylesheet" href="assets/style.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700&display=swap">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏔️</text></svg>">
+</head>
+<body>
+
+<header>
+  <button id="menuBtn" aria-label="เปิด/ปิดแผงข้อมูล">☰ รายการ</button>
+  <h1>🏔️ The Dolomites <span>6–11 ก.ย. 2026</span></h1>
+  <div class="hdr-spacer"></div>
+  <div class="hdr-meta">8 คน · 2 คัน · ฐาน Hofer Hof, Feldthurns</div>
+</header>
+
+<div id="layout">
+  <aside id="sidebar">
+    <nav id="tabs">
+      <button class="on" data-pane="placesPane">สถานที่</button>
+      <button data-pane="regsPane">กฎ 2026</button>
+      <button data-pane="cmpPane">เทียบฐานที่พัก</button>
+    </nav>
+
+    <section id="placesPane" class="pane on">
+      <div class="notice info">
+        คลิกที่การ์ดหรือหมุดบนแผนที่เพื่อดูรายละเอียด ระยะทาง เส้นทางเดิน และกฎที่ต้องจองล่วงหน้า<br>
+        หมุดที่มีจุด <b style="color:#fca5a5">!</b> สีแดง = <b>ต้องจองล่วงหน้า</b> ไม่งั้นเข้าไม่ได้
+      </div>
+      <div class="filters" id="filters"></div>
+      <div id="placeList"></div>
+      <div class="footnote">
+        ตัวเลขระยะทางและเวลาขับรถทั้งหมดวัดจาก <b>Hofer Hof, Feldthurns</b> ตามถนนจริง
+        คำนวณไว้ล่วงหน้าตอนสร้างหน้าเว็บ · ชื่อสถานที่คงภาษาอิตาลี/เยอรมันไว้ให้ตรงกับป้ายถนนและ Google Maps
+      </div>
+    </section>
+
+    <section id="regsPane" class="pane">
+      <div id="regList"></div>
+      <div class="footnote">
+        ทุกข้อในหน้านี้ตรวจสอบกับเว็บทางการของเทศบาล อุทยาน ผู้ให้บริการกระเช้า และพอร์ทัลจองที่จอดรถ
+        ข้อที่ติดป้าย “ยังไม่ยืนยัน” คือหาแหล่งทางการไม่ได้ — ไม่ได้แปลว่าไม่จริง แต่แปลว่ายังเชื่อไม่ได้
+      </div>
+    </section>
+
+    <section id="cmpPane" class="pane"></section>
+  </aside>
+
+  <div id="map"></div>
+</div>
+
+<div id="detail">
+  <button id="closeDetail" aria-label="ปิด">✕</button>
+  <div class="inner"></div>
+</div>
+
+<script src="assets/leaflet.js"></script>
+<script src="assets/routes.js"></script>
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+</body>
+</html>
