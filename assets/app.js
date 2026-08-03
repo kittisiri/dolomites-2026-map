@@ -8,7 +8,27 @@
   var PLACE_BY_ID = {};
   PLACES.forEach(function (p) { PLACE_BY_ID[p.id] = p; });
 
-  var HOFERHOF = PLACE_BY_ID.hoferhof;
+  var BASE_BY_KEY = {};
+  BASES.forEach(function (b) { BASE_BY_KEY[b.key] = b; });
+
+  /* ------------------------------------------------------------ แผน A / B */
+  var activePlan = DEFAULT_PLAN;
+
+  function plan() { return PLANS[activePlan]; }
+  function planBaseKeys() { return plan().bases; }
+
+  /* เวลาขับจากแผนปัจจุบันไปจุดหนึ่ง — คืนค่าที่ดีที่สุดและรายละเอียดรายฐาน */
+  function driveFromPlan(routeKey) {
+    if (!routeKey) return null;
+    var per = planBaseKeys().map(function (bk) {
+      var r = ROUTES.from_base[bk] && ROUTES.from_base[bk][routeKey];
+      return r ? { base: bk, km: r.km, min: r.min } : null;
+    }).filter(Boolean);
+    if (!per.length) return null;
+    var best = per.reduce(function (a, b) { return b.min < a.min ? b : a; });
+    var worst = per.reduce(function (a, b) { return b.min > a.min ? b : a; });
+    return { per: per, best: best, worst: worst, multi: per.length > 1 };
+  }
 
   /* ------------------------------------------------------------------ map */
   var map = L.map("map", { zoomControl: true, attributionControl: true })
@@ -74,9 +94,10 @@
     var h = "<b>" + esc(p.name) + "</b>";
     if (p.alt) h += '<br><span style="color:#94a3b8;font-size:12px">' + esc(p.alt) + "</span>";
     h += '<div style="margin-top:6px;font-size:12px;color:#94a3b8">' + meta.icon + " " + meta.label;
-    if (p.routeKey && ROUTES.from_hoferhof[p.routeKey]) {
-      var r = ROUTES.from_hoferhof[p.routeKey];
-      h += " · จากฐาน <b style='color:#e2e8f0'>" + r.km + " กม. / " + r.min + " นาที</b>";
+    var dr = driveFromPlan(p.routeKey);
+    if (dr) {
+      h += " · ใกล้สุด <b style='color:#e2e8f0'>" + dr.best.min + " นาที</b>" +
+           (dr.multi ? " (จาก " + esc(BASE_BY_KEY[dr.best.base].town) + ")" : "");
     }
     h += "</div>";
     if (sev === "high") {
@@ -107,43 +128,62 @@
 
   /* ---------------------------------------------------------- route lines */
   var allRouteLines = [];
+  var BASE_COLOR = { margherita: "#22c55e", tyrolian: "#eab308", hoferhof: "#38bdf8" };
 
   function drawAllRoutes() {
     routeLayer.clearLayers();
     allRouteLines = [];
-    Object.keys(ROUTES.from_hoferhof).forEach(function (key) {
-      var r = ROUTES.from_hoferhof[key];
-      if (!r || !r.coords || !r.coords.length) return;
-      var line = L.polyline(r.coords, {
-        color: "#38bdf8", weight: 2.5, opacity: 0.42, className: "rt-" + key
-      }).addTo(routeLayer);
-      line.bindTooltip(routeLabel(key, r), { sticky: true });
-      allRouteLines.push({ key: key, line: line });
+    planBaseKeys().forEach(function (bk) {
+      var set = ROUTES.from_base[bk] || {};
+      Object.keys(set).forEach(function (key) {
+        var r = set[key];
+        if (!r || !r.coords || !r.coords.length) return;
+        var line = L.polyline(r.coords, {
+          color: BASE_COLOR[bk] || "#38bdf8", weight: 2.5, opacity: 0.38
+        }).addTo(routeLayer);
+        line.bindTooltip(routeLabel(bk, key, r), { sticky: true });
+        allRouteLines.push({ key: key, base: bk, line: line });
+      });
     });
-    /* เส้นทางเข้าทริป: Temblhof → Hofer Hof */
-    var t = ROUTES.transit && ROUTES.transit.temblhof_to_hoferhof;
+    /* ขาเข้าทริปจาก Temblhof + ขาย้ายฐานกลางทริป (แผน A) */
+    var t = ROUTES.transit && ROUTES.transit[plan().transit];
     if (t && t.coords) {
-      var tl = L.polyline(t.coords, { color: "#c026d3", weight: 3, opacity: 0.65, dashArray: "7 6" }).addTo(routeLayer);
-      tl.bindTooltip("7 ก.ย. — Temblhof → Hofer Hof · " + t.km + " กม. / " + t.min + " นาที", { sticky: true });
+      L.polyline(t.coords, { color: "#c026d3", weight: 3, opacity: 0.7, dashArray: "7 6" })
+        .addTo(routeLayer)
+        .bindTooltip("7 ก.ย. — Temblhof → " + esc(BASE_BY_KEY[plan().primary].label) +
+                     " · " + t.km + " กม. / " + t.min + " นาที", { sticky: true });
+    }
+    if (activePlan === "A") {
+      var mv = ROUTES.transit && ROUTES.transit.margherita_to_tyrolian;
+      if (mv && mv.coords) {
+        L.polyline(mv.coords, { color: "#f472b6", weight: 3.5, opacity: 0.8, dashArray: "3 7" })
+          .addTo(routeLayer)
+          .bindTooltip("9 ก.ย. — ย้ายฐาน S. Cristina → Valdaora · <b>" +
+                       mv.km + " กม. / " + mv.min + " นาที</b>", { sticky: true });
+      }
     }
   }
 
-  function routeLabel(key, r) {
+  function routeLabel(baseKey, key, r) {
     var p = PLACES.filter(function (x) { return x.routeKey === key; })[0];
-    return "Hofer Hof → " + (p ? p.name : key) + " · <b>" + r.km + " กม. / " + r.min + " นาที</b>";
+    return esc(BASE_BY_KEY[baseKey].town) + " → " + (p ? esc(p.name) : key) +
+           " · <b>" + r.km + " กม. / " + r.min + " นาที</b>";
   }
 
   function highlightRoute(place) {
     allRouteLines.forEach(function (o) {
       var on = place && o.key === place.routeKey;
-      o.line.setStyle({ color: on ? "#f97316" : "#38bdf8", weight: on ? 5 : 2.5, opacity: on ? 0.95 : 0.22 });
+      o.line.setStyle({
+        color: on ? "#f97316" : (BASE_COLOR[o.base] || "#38bdf8"),
+        weight: on ? 5 : 2.5, opacity: on ? 0.95 : 0.18
+      });
       if (on) o.line.bringToFront();
     });
   }
 
   function clearHighlight() {
     allRouteLines.forEach(function (o) {
-      o.line.setStyle({ color: "#38bdf8", weight: 2.5, opacity: 0.42 });
+      o.line.setStyle({ color: BASE_COLOR[o.base] || "#38bdf8", weight: 2.5, opacity: 0.38 });
     });
   }
 
@@ -153,17 +193,29 @@
   var legend = L.control({ position: "bottomleft" });
   legend.onAdd = function () {
     var d = L.DomUtil.create("div", "maplegend");
+    d.innerHTML = legendHtml();
+    L.DomEvent.disableClickPropagation(d);
+    legendEl = d;
+    return d;
+  };
+  var legendEl = null;
+
+  function legendHtml() {
     var rows = Object.keys(KIND_META).map(function (k) {
       return '<div class="row"><i style="background:' + KIND_META[k].color + '"></i>' + KIND_META[k].label + "</div>";
     }).join("");
-    d.innerHTML = rows +
-      "<hr>" +
-      '<div class="row"><span style="color:#dc2626;font-weight:900">!</span> ต้องจองล่วงหน้า</div>' +
-      '<div class="row"><i style="background:#38bdf8;border-radius:2px;height:3px"></i> เส้นทางจาก Hofer Hof</div>' +
-      '<div class="row"><i style="background:#c026d3;border-radius:2px;height:3px"></i> Temblhof → Hofer Hof</div>';
-    L.DomEvent.disableClickPropagation(d);
-    return d;
-  };
+    var h = rows + "<hr>" +
+      '<div class="row"><span style="color:#dc2626;font-weight:900">!</span> ต้องจองล่วงหน้า</div>';
+    planBaseKeys().forEach(function (bk) {
+      h += '<div class="row"><i style="background:' + (BASE_COLOR[bk] || "#38bdf8") +
+           ';border-radius:2px;height:3px"></i> จาก ' + esc(BASE_BY_KEY[bk].town) + "</div>";
+    });
+    h += '<div class="row"><i style="background:#c026d3;border-radius:2px;height:3px"></i> Temblhof → ฐานแรก</div>';
+    if (activePlan === "A") {
+      h += '<div class="row"><i style="background:#f472b6;border-radius:2px;height:3px"></i> ย้ายฐาน 9 ก.ย.</div>';
+    }
+    return h;
+  }
   legend.addTo(map);
 
   /* ------------------------------------------------------- sidebar: places */
@@ -187,17 +239,24 @@
     });
   }
 
+  /* ที่พักของอีกแผนหนึ่งไม่ต้องโชว์ */
+  function inActivePlan(p) {
+    if (p.kind !== "base") return true;
+    return !p.plan || p.plan === "both" || p.plan === activePlan;
+  }
+
   function syncMarkers() {
     PLACES.forEach(function (p) {
       var m = markers[p.id];
-      if (activeKinds[p.kind]) { if (!markerLayer.hasLayer(m)) markerLayer.addLayer(m); }
+      var show = activeKinds[p.kind] && inActivePlan(p);
+      if (show) { if (!markerLayer.hasLayer(m)) markerLayer.addLayer(m); }
       else if (markerLayer.hasLayer(m)) markerLayer.removeLayer(m);
     });
   }
 
   function placeCard(p) {
     var meta = KIND_META[p.kind];
-    var r = p.routeKey && ROUTES.from_hoferhof[p.routeKey];
+    var dr = driveFromPlan(p.routeKey);
     var h = '<div class="card' + (selectedId === p.id ? " sel" : "") + '" data-id="' + p.id + '">';
     h += '<div class="card-top"><span style="color:' + meta.color + '">' + meta.icon + "</span>" +
          '<span class="card-name">' + esc(p.name) + "</span>";
@@ -207,8 +266,13 @@
     h += '<div class="card-line">';
     if (p.kind === "base") {
       h += "<span><b>" + esc(p.dates) + "</b></span>";
-    } else if (r) {
-      h += "<span>🚗 <b>" + r.km + " กม.</b> / <b>" + r.min + " นาที</b> จากฐาน</span>";
+    } else if (dr) {
+      if (dr.multi && dr.worst.min - dr.best.min > 5) {
+        h += "<span>🚗 <b>" + dr.best.min + " นาที</b> จาก " + esc(BASE_BY_KEY[dr.best.base].town) +
+             ' <span style="opacity:.65">· ' + dr.worst.min + " นาที จาก " + esc(BASE_BY_KEY[dr.worst.base].town) + "</span></span>";
+      } else {
+        h += "<span>🚗 <b>" + dr.best.km + " กม.</b> / <b>" + dr.best.min + " นาที</b> จากฐาน</span>";
+      }
     }
     if (p.stats && p.stats.dur) h += "<span>⏱ " + esc(p.stats.dur) + "</span>";
     if (p.stats && p.stats.diff) h += "<span>📈 " + esc(p.stats.diff) + "</span>";
@@ -233,7 +297,7 @@
     var html = "";
     order.forEach(function (kind) {
       if (!activeKinds[kind]) return;
-      var group = PLACES.filter(function (p) { return p.kind === kind; });
+      var group = PLACES.filter(function (p) { return p.kind === kind && inActivePlan(p); });
       if (!group.length) return;
       html += '<div style="font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:' +
               KIND_META[kind].color + ';font-weight:700;margin:14px 0 7px">' +
@@ -288,7 +352,7 @@
     renderPlaces();
 
     var meta = KIND_META[p.kind];
-    var r = p.routeKey && ROUTES.from_hoferhof[p.routeKey];
+    var dr = driveFromPlan(p.routeKey);
     var h = "";
 
     h += "<h2>" + esc(p.name) + "</h2>";
@@ -308,13 +372,27 @@
       h += "<dt>เวลาเช็กอิน/เอาต์</dt><dd>" + esc(p.checkin) + "</dd>";
       h += "<dt>ที่อยู่</dt><dd>" + esc(p.address) + "</dd>";
       h += "<dt>โทรศัพท์</dt><dd><a href='tel:" + p.phone.replace(/\s/g, "") + "' style='color:#38bdf8'>" + esc(p.phone) + "</a></dd>";
+      if (p.web) h += "<dt>เว็บไซต์</dt><dd><a href='" + p.web + "' target='_blank' rel='noopener' style='color:#38bdf8'>" + esc(p.web.replace(/^https?:\/\//, "")) + "</a></dd>";
       h += "</dl>";
+    }
+
+    /* --- เวลาขับจากแต่ละฐานของแผนนี้ --- */
+    if (dr && dr.multi) {
+      h += "<h3>ขับจากฐานไหนใกล้กว่า</h3><dl class=statgrid>";
+      dr.per.forEach(function (x) {
+        var isBest = x.base === dr.best.base;
+        h += "<dt>" + esc(BASE_BY_KEY[x.base].town) + "</dt><dd" +
+             (isBest ? ' style="color:#86efac"' : ' style="opacity:.7"') + ">" +
+             x.km + " กม. · " + x.min + " นาที" + (isBest ? "  ← ใกล้กว่า" : "") + "</dd>";
+      });
+      h += "</dl>";
+      h += '<p style="font-size:12.5px;color:#94a3b8;margin-top:8px">จัดวันให้ตรงกับฐานที่ใกล้กว่า จะประหยัดเวลาขับได้มาก</p>';
     }
 
     /* --- สถิติเส้นทางเดิน --- */
     if (p.stats) {
       h += "<h3>ข้อมูลเส้นทาง</h3><dl class=statgrid>";
-      if (r) h += "<dt>ขับจากฐาน</dt><dd>" + r.km + " กม. · " + r.min + " นาที</dd>";
+      if (dr && !dr.multi) h += "<dt>ขับจากฐาน</dt><dd>" + dr.best.km + " กม. · " + dr.best.min + " นาที</dd>";
       if (p.stats.dist) h += "<dt>ระยะทางเดิน</dt><dd>" + esc(p.stats.dist) + "</dd>";
       if (p.stats.gain) h += "<dt>ความสูงที่ไต่</dt><dd>" + esc(p.stats.gain) + "</dd>";
       if (p.stats.diff) h += "<dt>ความยาก</dt><dd>" + esc(p.stats.diff) + "</dd>";
@@ -423,86 +501,106 @@
     var el = document.getElementById("cmpPane");
     var m = ROUTES.matrix;
 
-    var h = '<div class="cmp-intro">Hofer Hof จองแล้วแต่ <b>ยกเลิกฟรีได้ถึง 23 ส.ค. 2026</b> — ' +
-      "ตารางนี้เทียบเวลาขับรถ (นาที) จากฐานที่จองไว้ กับฐานทางเลือกอีก 3 แห่ง " +
-      "ตัวเลขคำนวณจากเส้นทางถนนจริงและบันทึกไว้ในหน้าเว็บแล้ว</div>";
+    function best(bases, key) {
+      var vals = bases.map(function (b) { return (m[b] && m[b][key]) ? m[b][key].min : null; })
+                      .filter(function (v) { return v !== null; });
+      return vals.length ? Math.min.apply(null, vals) : null;
+    }
+    var A = PLANS.A.bases, B = PLANS.B.bases;
 
-    h += '<div style="overflow-x:auto"><table class="cmp"><thead><tr><th>จุดหมาย</th>';
-    BASES.forEach(function (b) {
-      h += '<th class="' + (b.booked ? "booked" : "") + '">' + esc(b.label.split(" (")[0]) +
-           (b.booked ? "<br>★" : "") + "</th>";
-    });
-    h += "</tr></thead><tbody>";
+    var h = '<div class="cmp-intro"><b>แผน A</b> ย้ายฐาน 2 ที่ (S. Cristina 7–9 ก.ย. → Valdaora 9–11 ก.ย.) · ' +
+      "<b>แผน B</b> อยู่ Hofer Hof ที่เดียว 4 คืน (จองแล้ว ยกเลิกฟรีถึง 23 ส.ค. 2026)<br>" +
+      "ตารางเทียบ<b>เวลาขับเที่ยวเดียว (นาที)</b> ไปแต่ละจุด — แผน A ใช้ฐานที่ใกล้กว่าในสองฐาน " +
+      "เพราะจัดวันให้ตรงกับฐานได้</div>";
 
-    var totals = {};
-    BASES.forEach(function (b) { totals[b.key] = 0; });
+    h += '<div style="overflow-x:auto"><table class="cmp"><thead><tr><th>จุดหมาย</th>' +
+      '<th class="booked">แผน A<br>ใกล้สุด</th><th style="font-weight:400">S.Cristina</th>' +
+      '<th style="font-weight:400">Valdaora</th><th class="booked">แผน B<br>Hofer Hof</th>' +
+      '<th style="font-weight:400">ต่าง</th></tr></thead><tbody>';
+
+    var totA = 0, totB = 0, winA = 0, winB = 0;
 
     COMPARE_KEYS.forEach(function (key) {
       var p = PLACES.filter(function (x) { return x.routeKey === key; })[0];
       if (!p) return;
-      var vals = BASES.map(function (b) { return (m[b.key] && m[b.key][key]) ? m[b.key][key].min : null; });
-      var valid = vals.filter(function (v) { return v !== null; });
-      var mn = Math.min.apply(null, valid), mx = Math.max.apply(null, valid);
+      var a = best(A, key), b = best(B, key);
+      var mg = (m.margherita && m.margherita[key]) ? m.margherita[key].min : null;
+      var ty = (m.tyrolian && m.tyrolian[key]) ? m.tyrolian[key].min : null;
+      totA += a || 0; totB += b || 0;
+      var diff = (a !== null && b !== null) ? b - a : null;
+      if (diff > 0) winA++; else if (diff < 0) winB++;
       h += "<tr><td>" + esc(p.name) + "</td>";
-      vals.forEach(function (v, i) {
-        totals[BASES[i].key] += (v || 0);
-        var cls = v === mn ? "best" : (v === mx ? "worst" : "");
-        var txt = v === null ? "–" : (v === 0 ? "เดินถึง" : v);
-        h += '<td class="' + cls + '">' + txt + "</td>";
-      });
+      h += '<td class="' + (a <= b ? "best" : "") + '">' + (a === 0 ? "เดินถึง" : a) + "</td>";
+      h += '<td style="opacity:.6">' + (mg === 0 ? "เดินถึง" : mg) + "</td>";
+      h += '<td style="opacity:.6">' + ty + "</td>";
+      h += '<td class="' + (b < a ? "best" : "") + '">' + b + "</td>";
+      h += '<td style="' + (diff > 0 ? "color:#86efac" : diff < 0 ? "color:#fca5a5" : "opacity:.5") + '">' +
+           (diff === null ? "–" : (diff > 0 ? "−" + diff : diff === 0 ? "0" : "+" + (-diff))) + "</td>";
       h += "</tr>";
     });
 
-    h += "</tbody><tfoot><tr><td>รวมทั้งหมด</td>";
-    var tvals = BASES.map(function (b) { return totals[b.key]; });
-    var tmin = Math.min.apply(null, tvals);
-    tvals.forEach(function (v) {
-      h += '<td class="' + (v === tmin ? "best" : "") + '">' + v + "</td>";
-    });
-    h += "</tr></tfoot></table></div>";
-    h += '<p style="font-size:11.5px;color:#94a3b8;margin-top:6px">หน่วยเป็นนาที (เที่ยวเดียว) · ' +
-         '<span style="color:#86efac">เขียว = เร็วที่สุด</span> · <span style="color:#fca5a5">แดง = ช้าที่สุด</span> · ★ = ฐานที่จองไว้</p>';
+    h += "</tbody><tfoot><tr><td>รวมทั้งหมด</td>" +
+      '<td class="' + (totA <= totB ? "best" : "") + '">' + totA + "</td>" +
+      '<td colspan="2" style="opacity:.4">—</td>' +
+      '<td class="' + (totB < totA ? "best" : "") + '">' + totB + "</td>" +
+      '<td style="color:#86efac">−' + (totB - totA) + "</td></tr></tfoot></table></div>";
+
+    h += '<p style="font-size:11.5px;color:#94a3b8;margin-top:6px">' +
+      'คอลัมน์ “ต่าง” = แผน A ประหยัดกว่ากี่นาที (<span style="color:#86efac">เขียว = แผน A เร็วกว่า</span>, ' +
+      '<span style="color:#fca5a5">แดง = แผน B เร็วกว่า</span>)</p>';
 
     /* -------- คำตัดสิน -------- */
     var west = ["seceda", "alpe_di_siusi", "adolf_munkel", "val_di_funes", "passo_gardena"];
     var east = ["tre_cime", "braies", "sorapis", "cinque_torri", "falzarego"];
-    function sum(base, keys) {
-      return keys.reduce(function (a, k) { return a + ((m[base] && m[base][k]) ? m[base][k].min : 0); }, 0);
-    }
-    var W = {}, E = {};
-    BASES.forEach(function (b) { W[b.key] = sum(b.key, west); E[b.key] = sum(b.key, east); });
+    function sum(bases, keys) { return keys.reduce(function (a, k) { return a + (best(bases, k) || 0); }, 0); }
 
     h += '<div class="verdict"><h4>สรุปให้ตัดสินใจ</h4>';
-    h += "<p><b>ฝั่งตะวันตก</b> (Seceda, Alpe di Siusi, Adolf Munkel, Val di Funes, Passo Gardena) — " +
-         "รวมเวลาขับเที่ยวเดียว: Hofer Hof <b>" + W.hoferhof + "</b> นาที · Ortisei <b>" + W.ortisei +
-         "</b> · Cortina <b>" + W.cortina + "</b> · Dobbiaco <b>" + W.dobbiaco + "</b></p>";
-    h += "<p><b>ฝั่งตะวันออก</b> (Tre Cime, Braies, Sorapis, Cinque Torri, Falzarego) — " +
-         "Hofer Hof <b>" + E.hoferhof + "</b> นาที · Ortisei <b>" + E.ortisei +
-         "</b> · Cortina <b>" + E.cortina + "</b> · Dobbiaco <b>" + E.dobbiaco + "</b></p>";
+    h += "<p>📊 <b>แผน A ชนะ " + winA + " จาก " + COMPARE_KEYS.length + " จุด</b> " +
+         "และรวมเวลาขับน้อยกว่า <b>" + (totB - totA) + " นาที</b> (แผน A " + totA + " นาที · แผน B " + totB + " นาที) " +
+         "— ต่างกันราว <b>" + (((totB - totA) / 60).toFixed(1)) + " ชั่วโมง</b> ต่อการเก็บครบทุกจุดหนึ่งรอบ</p>";
 
-    var bestOverall = BASES.slice().sort(function (a, b) { return totals[a.key] - totals[b.key]; })[0];
-    var gap = totals.hoferhof - totals[bestOverall.key];
-    var perDay = Math.round(gap * 2 / 4);
+    h += "<p>🧭 <b>ทำไมแผน A ถึงชนะ:</b> การย้ายฐานทำให้ไม่ต้องขับสวนหุบเขาทุกวัน — " +
+         "สองคืนแรกอยู่ฝั่งตะวันตกเก็บ <b>Seceda (8 นาที) · Alpe di Siusi (24 นาที) · Passo Sella/Gardena</b> " +
+         "แล้วสองคืนหลังย้ายไปฝั่งเหนือ-ตะวันออกเก็บ <b>Lago di Braies (20 นาที) · Tre Cime (55 นาที) · Sorapis (43 นาที)</b> " +
+         "ส่วนแผน B ต้องขับไป-กลับจากจุดกลางทุกวัน</p>";
 
-    h += "<p>🔎 <b>อ่านตัวเลขยังไง:</b> ";
-    if (bestOverall.key === "hoferhof") {
-      h += "Hofer Hof รวมแล้วดีที่สุดในสี่ตัวเลือก — ฐานที่จองไว้ไม่ได้แพ้ใคร</p>";
-    } else {
-      h += "ฐานที่รวมเวลาน้อยที่สุดคือ <b>" + esc(bestOverall.label) + "</b> " +
-           "เร็วกว่า Hofer Hof รวม <b>" + gap + " นาที</b> ต่อการไปครบทุกจุดหนึ่งรอบ " +
-           "→ ถ้าเที่ยว 4 วันแบบไป-กลับ เฉลี่ยราว <b>" + perDay + " นาที/วัน</b></p>";
-    }
+    h += "<p>ฝั่งตะวันตก: แผน A <b>" + sum(A, west) + "</b> นาที · แผน B <b>" + sum(B, west) + "</b><br>" +
+         "ฝั่งตะวันออก/เหนือ: แผน A <b>" + sum(A, east) + "</b> นาที · แผน B <b>" + sum(B, east) + "</b></p>";
 
     h += "<p>⚖️ <b>สิ่งที่ตัวเลขไม่บอก:</b></p><ul class=notes>";
-    h += "<li>Hofer Hof อยู่<b>กลางทาง</b> — ไม่ชนะฝั่งไหนเลย แต่ก็ไม่แพ้ยับฝั่งไหน เหมาะถ้าจะเที่ยวทั้งสองฝั่ง</li>";
-    h += "<li>🔴 <b>Ortisei / Val Gardena ได้สิทธิยกเว้น ZTL Passo Gardena</b> ในฐานะแขกค้างคืน — Feldthurns ไม่ได้ นี่เป็นข้อได้เปรียบที่ไม่โผล่ในตารางเวลา</li>";
-    h += "<li>Ortisei มีกระเช้าอยู่กลางเมือง (Seceda, Alpe di Siusi) → <b>บางวันไม่ต้องใช้รถเลย</b></li>";
-    h += "<li>Cortina/Dobbiaco ชนะขาดฝั่งตะวันออก (Tre Cime, Braies, Sorapis) แต่แพ้ยับฝั่งตะวันตก</li>";
-    h += "<li>💰 Hofer Hof = €1,836.80 สำหรับ 8 คน 4 คืน (€229.60/คน) — ที่พัก 8 คนในหุบเขาหลักมักหายากและแพงกว่า</li>";
-    h += "<li>⛽ ต้องคิดค่าน้ำมันและโควตาระยะทางรถเช่าด้วย (จำกัด 2,430 กม.)</li>";
+    h += "<li>🟢 <b>แผน A ได้สิทธิยกเว้น ZTL Passo Gardena</b> ตอนพักที่ Santa Cristina (7–9 ก.ย.) — แผน B ไม่ได้เลยทั้งทริป " +
+         "<b>แต่สิทธินี้หายไปหลังย้ายไป Valdaora</b> ให้ขึ้นพาสในสองคืนแรก</li>";
+    h += "<li>🟢 แผน A: Col Raiser ห่างที่พักแรกแค่ 2 นาที → ขึ้น Seceda ราคา €34 แทน €74 <b>ประหยัด €320 สำหรับ 8 คน</b></li>";
+    h += "<li>🔴 <b>แผน A ต้องเก็บของย้ายกลางทริป</b> — 79 กม. / 77 นาที วันที่ 9 ก.ย. เสียเวลาไปครึ่งวัน (หรือแวะเที่ยวระหว่างทางให้คุ้ม)</li>";
+    h += "<li>🔴 <b>แผน A ต้องจอง 2 ยูนิตในแต่ละที่</b> เพราะยูนิตเดียวไม่พอ 8 คน — แผน B นอนรวมหลังเดียวได้</li>";
+    h += "<li>🔴 <b>แผน A ยังไม่รู้เวลาเช็กอิน/เช็กเอาต์ของทั้งสองที่</b> — สำคัญมากเพราะ 7 ก.ย. ต้องเช็กเอาต์ Temblhof 09:00–10:00</li>";
+    h += "<li>💰 แผน B = €1,836.80 สำหรับ 8 คน 4 คืน (€229.60/คน) · ยังไม่ได้เทียบราคาแผน A</li>";
+    h += "<li>⛽ แผน A ขับน้อยกว่า → ประหยัดน้ำมันและโควตาระยะทางรถเช่า (จำกัด 2,430 กม.)</li>";
     h += "</ul>";
     h += "<p style='margin-top:10px'>📅 <b>เดดไลน์: ยกเลิก Hofer Hof ฟรีได้ถึง 23 ส.ค. 2026 23:59</b> หลังจากนั้นเสียเต็มจำนวน</p>";
     h += "</div>";
+
+    /* -------- ตารางอ้างอิงฐานอื่น -------- */
+    var refs = BASES.filter(function (b) { return b.ref; });
+    h += '<h3 style="font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:#38bdf8;margin:20px 0 8px">ฐานอ้างอิงอื่น ๆ</h3>';
+    h += '<p style="font-size:12.5px;color:#94a3b8;margin-top:-4px">ถ้าจะเทียบกับการพักในหุบเขาหลักแบบฐานเดียว</p>';
+    h += '<div style="overflow-x:auto"><table class="cmp"><thead><tr><th>จุดหมาย</th>' +
+      refs.map(function (b) { return "<th>" + esc(b.label) + "</th>"; }).join("") + "</tr></thead><tbody>";
+    var refTot = {}; refs.forEach(function (b) { refTot[b.key] = 0; });
+    COMPARE_KEYS.forEach(function (key) {
+      var p = PLACES.filter(function (x) { return x.routeKey === key; })[0];
+      if (!p) return;
+      h += "<tr><td>" + esc(p.name) + "</td>";
+      refs.forEach(function (b) {
+        var v = (m[b.key] && m[b.key][key]) ? m[b.key][key].min : null;
+        refTot[b.key] += v || 0;
+        h += "<td>" + (v === 0 ? "เดินถึง" : v) + "</td>";
+      });
+      h += "</tr>";
+    });
+    h += "</tbody><tfoot><tr><td>รวมทั้งหมด</td>" +
+      refs.map(function (b) { return "<td>" + refTot[b.key] + "</td>"; }).join("") +
+      "</tr></tfoot></table></div>";
 
     h += '<div class="footnote">ระยะทางและเวลาคำนวณจาก OSRM บนข้อมูลถนน OpenStreetMap ' +
          "ตอนสร้างหน้าเว็บ (ไม่ได้เรียก API ตอนเปิดหน้า) · เป็นเวลาขับล้วน ไม่รวมจอดพัก เติมน้ำมัน หรือรถติด · " +
@@ -536,10 +634,48 @@
       var i = kv.indexOf("=");
       if (i > 0) parts[kv.slice(0, i)] = decodeURIComponent(kv.slice(i + 1));
     });
+    if (parts.plan && PLANS[parts.plan]) setPlan(parts.plan);
     if (parts.tab && TAB_ALIAS[parts.tab]) showTab(TAB_ALIAS[parts.tab]);
-    if (parts.place && PLACE_BY_ID[parts.place]) openDetail(parts.place);
+    if (parts.place && PLACE_BY_ID[parts.place]) {
+      /* ถ้าลิงก์ชี้ไปที่พักของอีกแผน ให้สลับแผนให้อัตโนมัติ */
+      var tp = PLACE_BY_ID[parts.place];
+      if (tp.kind === "base" && tp.plan && tp.plan !== "both" && tp.plan !== activePlan) setPlan(tp.plan);
+      openDetail(parts.place);
+    }
   }
   window.addEventListener("hashchange", applyHash);
+
+  /* -------------------------------------------------------- ปุ่มสลับแผน */
+  function renderPlanSwitch() {
+    var el = document.getElementById("planSwitch");
+    el.innerHTML = Object.keys(PLANS).map(function (k) {
+      var pl = PLANS[k], on = k === activePlan;
+      return '<button class="planbtn' + (on ? " on" : "") + '" data-plan="' + k + '" ' +
+             (on ? 'style="border-color:' + pl.color + ';color:' + pl.color + '"' : "") + ">" +
+             "<b>" + esc(pl.short) + "</b><span>" + esc(pl.sub) + "</span></button>";
+    }).join("");
+    el.querySelectorAll(".planbtn").forEach(function (b) {
+      b.addEventListener("click", function () { setPlan(b.getAttribute("data-plan")); });
+    });
+  }
+
+  function setPlan(k) {
+    if (!PLANS[k] || k === activePlan) return;
+    activePlan = k;
+    document.getElementById("detail").classList.remove("open");
+    selectedId = null;
+    renderPlanSwitch();
+    drawAllRoutes();
+    syncMarkers();
+    renderPlaces();
+    renderRegs();
+    renderCompare();
+    if (legendEl) legendEl.innerHTML = legendHtml();
+    /* รีเฟรช popup ให้ตัวเลขตรงกับแผนใหม่ */
+    PLACES.forEach(function (p) { if (markers[p.id]) markers[p.id].setPopupContent(popupHtml(p)); });
+    var vis = PLACES.filter(inActivePlan).map(function (p) { return p.ll; });
+    map.fitBounds(L.latLngBounds(vis).pad(0.08), { animate: false });
+  }
 
   /* -------------------------------------------------------------- mobile */
   function closeSidebarOnMobile() {
@@ -550,13 +686,15 @@
   });
 
   /* ---------------------------------------------------------------- init */
+  renderPlanSwitch();
   renderFilters();
+  syncMarkers();
   renderPlaces();
   renderRegs();
   renderCompare();
 
-  /* จัดกรอบแผนที่ให้เห็นทุกหมุด */
-  var bounds = L.latLngBounds(PLACES.map(function (p) { return p.ll; }));
+  /* จัดกรอบแผนที่ให้เห็นทุกหมุดของแผนที่เลือกอยู่ */
+  var bounds = L.latLngBounds(PLACES.filter(inActivePlan).map(function (p) { return p.ll; }));
   map.fitBounds(bounds.pad(0.08));
 
   applyHash();
