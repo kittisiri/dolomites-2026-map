@@ -158,8 +158,16 @@
       if (mv && mv.coords) {
         L.polyline(mv.coords, { color: "#f472b6", weight: 3.5, opacity: 0.8, dashArray: "3 7" })
           .addTo(routeLayer)
-          .bindTooltip("9 ก.ย. — ย้ายฐาน S. Cristina → Valdaora · <b>" +
-                       mv.km + " กม. / " + mv.min + " นาที</b>", { sticky: true });
+          .bindTooltip("9 ก.ย. — ย้ายฐาน (เส้นปกติ) S. Cristina → Valdaora · <b>" +
+                       mv.km + " กม. / " + mv.min + " นาที</b><br>ไม่ผ่านช่องเขาที่มีข้อจำกัด", { sticky: true });
+      }
+      var sc = ROUTES.transit && ROUTES.transit.margherita_to_tyrolian_scenic;
+      if (sc && sc.coords) {
+        L.polyline(sc.coords, { color: "#fb923c", weight: 3.5, opacity: 0.85, dashArray: "10 6" })
+          .addTo(routeLayer)
+          .bindTooltip("9 ก.ย. — ย้ายฐาน (<b>เส้นสวย</b>) ผ่าน Passo Gardena → Corvara → Val Badia · <b>" +
+                       sc.km + " กม. / " + sc.min + " นาที</b><br>" +
+                       "สั้นกว่าเส้นปกติ 9.6 กม. ช้ากว่า 7 นาที · ⚠️ ต้องมีใบอนุญาต ZTL จากที่พัก", { sticky: true });
       }
     }
   }
@@ -212,7 +220,8 @@
     });
     h += '<div class="row"><i style="background:#c026d3;border-radius:2px;height:3px"></i> Temblhof → ฐานแรก</div>';
     if (activePlan === "A") {
-      h += '<div class="row"><i style="background:#f472b6;border-radius:2px;height:3px"></i> ย้ายฐาน 9 ก.ย.</div>';
+      h += '<div class="row"><i style="background:#f472b6;border-radius:2px;height:3px"></i> ย้ายฐาน 9 ก.ย. (เส้นปกติ)</div>';
+      h += '<div class="row"><i style="background:#fb923c;border-radius:2px;height:3px"></i> ย้ายฐาน 9 ก.ย. (เส้นสวย)</div>';
     }
     return h;
   }
@@ -510,6 +519,36 @@
       h += '<div class="notice">ตอนนี้กำลังดู <b>แผน B</b> อยู่ — ตัวเลขเวลาขับในหน้านี้อ้างอิงฐานของแผน A ' +
            '<button class="btn alt" id="toPlanA" style="margin-top:8px">สลับไปแผน A</button></div>';
     }
+
+    /* ---- ต้องจองอะไร ภายในเมื่อไร ---- */
+    var SEV_LABEL = {
+      block: { icon: "🔴", label: "ไม่จอง = ไปไม่ได้" },
+      money: { icon: "💸", label: "มีเงินเป็นเดิมพัน" },
+      soft:  { icon: "🟠", label: "มีทางเลี่ยง" },
+      info:  { icon: "🔵", label: "ทำก่อนได้เปรียบ" },
+    };
+    var sevOrder = { money: 0, block: 1, soft: 2, info: 3 };
+    var nBlock = BOOKINGS.filter(function (b) { return b.sev === "block" || b.sev === "money"; }).length;
+
+    h += '<h3 class="sec">ต้องจองอะไร ภายในเมื่อไร</h3>';
+    h += '<p style="font-size:12.5px;color:#94a3b8;margin-top:-4px">' +
+         "เรียงตามความเร่งด่วน · <b>" + nBlock + " รายการแรกคือของจริง</b> ที่พลาดแล้วแก้ไม่ได้</p>";
+
+    BOOKINGS.slice().sort(function (a, b) { return sevOrder[a.sev] - sevOrder[b.sev]; })
+      .forEach(function (bk) {
+        var s = SEV_LABEL[bk.sev];
+        h += '<div class="bk sev-' + bk.sev + '">';
+        h += '<div class="bk-head"><span class="bk-what">' + s.icon + " " + esc(bk.what) + "</span>" +
+             '<span class="bk-when">' + esc(bk.when) + "</span></div>";
+        h += '<div class="bk-meta">' + esc(bk.day) + " · <b>" + esc(bk.cost) + "</b> · " + esc(s.label) + "</div>";
+        h += '<div class="bk-why">' + bk.why + "</div>";
+        h += '<div class="bk-act">👉 ' + bk.action + "</div>";
+        if (bk.url) h += '<a class="btn book" style="margin-top:8px" href="' + bk.url +
+                         '" target="_blank" rel="noopener">🔗 เปิดเว็บทางการ</a>';
+        h += "</div>";
+      });
+
+    h += '<h3 class="sec">แผนเที่ยวรายวัน</h3>';
 
     ITINERARY.forEach(function (day) {
       h += '<div class="day">';

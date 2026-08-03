@@ -248,6 +248,29 @@ ul.notes li { margin-bottom: 7px; font-size: 13.8px; }
 .day-flag.sev-med  { background: rgba(249,115,22,.09); border-color: rgba(249,115,22,.3); color: #fed7aa; }
 .day-flag.sev-ok   { background: rgba(34,197,94,.09);  border-color: rgba(34,197,94,.28);  color: #bbf7d0; }
 
+/* ---------- booking panel ---------- */
+.bk {
+  border: 1px solid var(--line); border-left: 4px solid var(--line);
+  background: var(--panel-2); border-radius: 0 10px 10px 0;
+  padding: 10px 13px; margin-bottom: 9px;
+}
+.bk.sev-money { border-left-color: #a855f7; }
+.bk.sev-block { border-left-color: #dc2626; }
+.bk.sev-soft  { border-left-color: #ea580c; }
+.bk.sev-info  { border-left-color: #0891b2; }
+.bk-head { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.bk-what { font-weight: 700; font-size: 14px; flex: 1; min-width: 60%; }
+.bk-when {
+  font-size: 11px; font-weight: 700; color: #fcd34d;
+  background: rgba(245,158,11,.13); border: 1px solid rgba(245,158,11,.3);
+  border-radius: 999px; padding: 1px 9px; white-space: nowrap;
+}
+.bk.sev-money .bk-when { color: #e9d5ff; background: rgba(168,85,247,.15); border-color: rgba(168,85,247,.4); }
+.bk.sev-block .bk-when { color: #fecaca; background: rgba(239,68,68,.14); border-color: rgba(239,68,68,.38); }
+.bk-meta { font-size: 11.5px; color: var(--txt-dim); margin-top: 3px; }
+.bk-why  { font-size: 12.9px; color: #cbd5e1; margin-top: 7px; }
+.bk-act  { font-size: 12.9px; margin-top: 7px; padding-top: 7px; border-top: 1px dashed #33415580; }
+
 h3.sec {
   font-size: 13px; text-transform: uppercase; letter-spacing: .06em;
   color: var(--accent); margin: 22px 0 8px; font-weight: 700;
