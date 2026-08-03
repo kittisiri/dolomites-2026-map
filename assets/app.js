@@ -496,6 +496,81 @@
     el.querySelectorAll(".reg.sev-high").forEach(function (n) { n.classList.add("open"); });
   }
 
+  /* ---------------------------------------------------- pane: แผน A */
+  var SEV_ICON = { high: "🔴", med: "🟠", ok: "🟢" };
+
+  function renderItinerary() {
+    var el = document.getElementById("itinPane");
+
+    var h = '<div class="notice info"><b>แผนเที่ยวร่างของแผน A</b><br>' +
+      "คลิกชื่อสถานที่ในแต่ละวันเพื่อเปิดรายละเอียด ระยะทาง และกฎที่ต้องจอง · " +
+      'ตัวเลขเวลาขับคิดจากฐานของวันนั้น</div>';
+
+    if (activePlan !== "A") {
+      h += '<div class="notice">ตอนนี้กำลังดู <b>แผน B</b> อยู่ — ตัวเลขเวลาขับในหน้านี้อ้างอิงฐานของแผน A ' +
+           '<button class="btn alt" id="toPlanA" style="margin-top:8px">สลับไปแผน A</button></div>';
+    }
+
+    ITINERARY.forEach(function (day) {
+      h += '<div class="day">';
+      h += '<div class="day-head"><span class="day-date">' + esc(day.date) +
+           '<small>' + esc(day.dow) + "</small></span>" +
+           '<div><div class="day-title">' + esc(day.title) + "</div>" +
+           '<div class="day-base">' + esc(day.base) + "</div></div></div>";
+      h += '<div class="day-plan">' + esc(day.plan) + "</div>";
+
+      /* สถานที่ของวันนั้น */
+      if (day.items && day.items.length) {
+        h += '<div class="day-stops">';
+        day.items.forEach(function (id) {
+          var p = PLACE_BY_ID[id];
+          if (!p) return;
+          var meta = KIND_META[p.kind];
+          var dr = driveFromPlan(p.routeKey);
+          h += '<button class="stop" data-id="' + id + '">' +
+               '<span style="color:' + meta.color + '">' + meta.icon + "</span> " +
+               esc(p.name) +
+               (dr ? ' <b style="color:#7dd3fc">' + dr.best.min + " น.</b>" : "") +
+               (needsBooking(p) ? ' <span style="color:#fca5a5;font-weight:900">!</span>' : "") +
+               "</button>";
+        });
+        h += "</div>";
+      }
+
+      day.flags.forEach(function (f) {
+        h += '<div class="day-flag sev-' + f.sev + '">' + (SEV_ICON[f.sev] || "•") + " " + f.t + "</div>";
+      });
+      h += "</div>";
+    });
+
+    /* ---- ข้อดี / ข้อเสีย ---- */
+    h += '<h3 class="sec">ข้อดีของแผน A</h3><ul class="proscons pros">' +
+      PLAN_A_PROS.map(function (x) { return "<li>" + x + "</li>"; }).join("") + "</ul>";
+    h += '<h3 class="sec">ข้อเสียของแผน A</h3><ul class="proscons cons">' +
+      PLAN_A_CONS.map(function (x) { return "<li>" + x + "</li>"; }).join("") + "</ul>";
+
+    /* ---- ข้อเสนอ ---- */
+    h += '<h3 class="sec">ข้อเสนอของผม</h3>';
+    h += '<p style="font-size:12.5px;color:#94a3b8;margin-top:-4px">เรียงจากที่ควรทำก่อน</p>';
+    var order = { high: 0, med: 1 };
+    PLAN_A_SUGGESTIONS.slice().sort(function (a, b) { return order[a.sev] - order[b.sev]; })
+      .forEach(function (s, i) {
+        h += '<div class="sugg sev-' + s.sev + '"><div class="sugg-t">' +
+             (i + 1) + ". " + s.t + "</div><div class=\"sugg-d\">" + s.d + "</div></div>";
+      });
+
+    h += '<div class="footnote">แผนเที่ยวนี้เป็นร่างที่ดุ๊กให้มา ผมใส่ข้อสังเกตกำกับไว้เท่านั้น ' +
+      "ยังไม่ได้แก้แผนให้ — ถ้าอยากให้ปรับตามข้อเสนอ บอกได้เลย</div>";
+
+    el.innerHTML = h;
+
+    el.querySelectorAll(".stop").forEach(function (b) {
+      b.addEventListener("click", function () { openDetail(b.getAttribute("data-id")); });
+    });
+    var toA = el.querySelector("#toPlanA");
+    if (toA) toA.addEventListener("click", function () { setPlan("A"); });
+  }
+
   /* ------------------------------------------------ pane: เทียบฐานที่พัก */
   function renderCompare() {
     var el = document.getElementById("cmpPane");
@@ -623,7 +698,7 @@
   });
 
   /* ------------------------------------------------ ลิงก์ตรง (แชร์ให้กลุ่ม) */
-  var TAB_ALIAS = { places: "placesPane", regs: "regsPane", cmp: "cmpPane" };
+  var TAB_ALIAS = { places: "placesPane", itin: "itinPane", regs: "regsPane", cmp: "cmpPane" };
 
   function applyHash() {
     var h = "";
@@ -668,12 +743,14 @@
     drawAllRoutes();
     syncMarkers();
     renderPlaces();
+    renderItinerary();
     renderRegs();
     renderCompare();
     if (legendEl) legendEl.innerHTML = legendHtml();
     /* รีเฟรช popup ให้ตัวเลขตรงกับแผนใหม่ */
     PLACES.forEach(function (p) { if (markers[p.id]) markers[p.id].setPopupContent(popupHtml(p)); });
-    var vis = PLACES.filter(inActivePlan).map(function (p) { return p.ll; });
+    var vis = PLACES.filter(function (p) { return inActivePlan(p) && !p.outsideRegion; })
+                    .map(function (p) { return p.ll; });
     map.fitBounds(L.latLngBounds(vis).pad(0.08), { animate: false });
   }
 
@@ -690,11 +767,13 @@
   renderFilters();
   syncMarkers();
   renderPlaces();
+  renderItinerary();
   renderRegs();
   renderCompare();
 
   /* จัดกรอบแผนที่ให้เห็นทุกหมุดของแผนที่เลือกอยู่ */
-  var bounds = L.latLngBounds(PLACES.filter(inActivePlan).map(function (p) { return p.ll; }));
+  var bounds = L.latLngBounds(PLACES.filter(function (p) { return inActivePlan(p) && !p.outsideRegion; })
+                                   .map(function (p) { return p.ll; }));
   map.fitBounds(bounds.pad(0.08));
 
   applyHash();
