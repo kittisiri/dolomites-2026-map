@@ -34,8 +34,24 @@
   /* ------------------------------------------------------------- helpers */
   function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
 
-  function gmapsDir(ll) { return "https://www.google.com/maps/dir/?api=1&destination=" + ll[0] + "," + ll[1]; }
-  function gmapsPin(ll) { return "https://www.google.com/maps/search/?api=1&query=" + ll[0] + "," + ll[1]; }
+  /* ลิงก์ Google Maps — ส่งชื่อสถานที่ถ้ามี (ได้การ์ดของสถานที่จริง)
+     ถ้าไม่มีชื่อในตาราง GMAPS ค่อยถอยไปใช้พิกัด (หมุดเปล่า แต่ตำแหน่งถูกแน่นอน) */
+  function gq(p, which, fallbackLl) {
+    var g = (typeof GMAPS !== "undefined" && GMAPS[p.id]) || {};
+    /* drive: null = ตั้งใจให้ใช้พิกัด (จุดจอดไม่มีชื่อที่ Google หาเจอ)
+       ต่างจาก "ไม่ได้ใส่ drive" ซึ่งแปลว่าจุดจอดคือที่เดียวกับตัวสถานที่ */
+    var name = which === "drive"
+      ? (g.hasOwnProperty("drive") ? g.drive : g.pin)
+      : g.pin;
+    return encodeURIComponent(name || (fallbackLl[0] + "," + fallbackLl[1]));
+  }
+
+  function gmapsDir(p) {
+    return "https://www.google.com/maps/dir/?api=1&destination=" + gq(p, "drive", p.driveTo || p.ll);
+  }
+  function gmapsPin(p) {
+    return "https://www.google.com/maps/search/?api=1&query=" + gq(p, "pin", p.ll);
+  }
 
   /* ระดับกฎที่รุนแรงที่สุดของสถานที่นี้ */
   function topSeverity(place) {
@@ -91,7 +107,7 @@
     if (sev === "high") {
       h += '<div style="margin-top:6px;font-size:12px;color:var(--rose-700)">⚠️ ต้องจองล่วงหน้า — ดูรายละเอียดในแผงข้อมูล</div>';
     }
-    h += '<a class="pop-btn" href="' + gmapsDir(p.driveTo || p.ll) + '" target="_blank" rel="noopener">เปิดใน Google Maps</a>';
+    h += '<a class="pop-btn" href="' + gmapsDir(p) + '" target="_blank" rel="noopener">เปิดใน Google Maps</a>';
     h += ' <a class="pop-btn" style="background:var(--stone-600);color:var(--stone-900)" href="#" data-open="' + p.id + '">รายละเอียด</a>';
     return h;
   }
@@ -392,8 +408,8 @@
     /* --- ปุ่มนำทาง --- */
     h += "<h3>นำทาง</h3>";
     if (p.driveLabel) h += '<p style="font-size:13.3px;color:var(--txt-muted)">🅿️ ' + esc(p.driveLabel) + "</p>";
-    h += '<a class="btn" href="' + gmapsDir(p.driveTo || p.ll) + '" target="_blank" rel="noopener">🧭 เปิดเส้นทางใน Google Maps</a>';
-    h += '<a class="btn alt" href="' + gmapsPin(p.ll) + '" target="_blank" rel="noopener">📍 ดูหมุดใน Google Maps</a>';
+    h += '<a class="btn" href="' + gmapsDir(p) + '" target="_blank" rel="noopener">🧭 เปิดเส้นทางใน Google Maps</a>';
+    h += '<a class="btn alt" href="' + gmapsPin(p) + '" target="_blank" rel="noopener">📍 ดูหมุดใน Google Maps</a>';
     h += '<button class="btn alt" id="shareBtn" data-id="' + p.id + '">🔗 คัดลอกลิงก์หน้านี้</button>';
 
     /* --- คำอธิบายเส้นทางเดิน --- */

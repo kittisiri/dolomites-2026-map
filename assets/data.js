@@ -886,6 +886,57 @@ const PLAN_SUGGESTIONS = [
     d: "ขับรวมวันนั้นราว 5 ชม. อยู่แล้ว · Wagenbrüchsee สวยสุดตอนเช้าตรู่ซึ่งเราจะไปถึงบ่าย ๆ อยู่แล้ว คุ้มน้อยกว่าที่คิด", sev: "med" },
 ];
 
+/* ---------------------------------------------------------------------------
+   คำค้นสำหรับ Google Maps
+   ส่งพิกัดดิบไป Google จะปักหมุดเปล่า ๆ ไม่มีชื่อ ไม่มีรูป ไม่มีเวลาเปิด-ปิด
+   ส่งชื่อไปแทน จะได้การ์ดของสถานที่จริง
+
+   pin   = ปุ่ม "ดูหมุดใน Google Maps" — ตัวสถานที่
+   drive = ปุ่ม "เปิดเส้นทางใน Google Maps" — จุดที่ขับไปจอด
+           หลายที่จุดจอดไม่ใช่ที่เดียวกับตัวสถานที่ (ยอดเขา vs ลานจอดตีนเขา)
+           ไม่ใส่ drive = ใช้ pin · ไม่ใส่ทั้งคู่ = ถอยไปใช้พิกัดแบบเดิม
+
+   ที่พักใช้ที่อยู่เต็มแทนชื่อ — Google หาบ้านพักเล็ก ๆ จากชื่อไม่เจอ แต่หาจากที่อยู่เจอเสมอ
+   --------------------------------------------------------------------------- */
+const GMAPS = {
+  /* Temblhof ไม่ใส่ชื่อ — ใช้พิกัดเหมือนเดิม
+     Google ตีความ "Brennerstraße 60, Vipiteno" ไปที่ 46.8915, 11.4361 ซึ่งห่างจากพิกัด
+     ที่เก็บไว้ในไฟล์นี้ (46.9213, 11.4449) ถึง 3.4 กม. — ยังไม่รู้ว่าฝั่งไหนถูก
+     อีกสองที่พักตรวจแล้วตรงกัน (Margherita ห่าง 2 ม. · Tyrolian ห่าง 300 ม.)
+     เลยไม่กล้าเดา ปล่อยไว้ที่พิกัดเดิมจนกว่าจะเช็กกับใบจองได้ */
+  margherita:    { pin: "Streda Dursan 5, 39047 Santa Cristina Valgardena BZ, Italia" },
+  tyrolian:      { pin: "Hans-von-Perthaler-Straße 22, 39030 Valdaora BZ, Italia" },
+
+  tre_cime:      { pin: "Tre Cime di Lavaredo",  drive: "Rifugio Auronzo" },
+  sorapis:       { pin: "Lago di Sorapis",       drive: "Passo Tre Croci" },
+  cinque_torri:  { pin: "Cinque Torri",          drive: "Bai de Dones" },
+  seceda:        { pin: "Seceda",                drive: "Cabinovia Seceda, Ortisei" },
+  adolf_munkel:  { pin: "Adolf Munkel Weg",      drive: "Malga Zannes, Funes" },
+
+  braies:        { pin: "Lago di Braies" },
+  carezza:       { pin: "Lago di Carezza" },
+  misurina:      { pin: "Lago di Misurina" },
+  wagenbruchsee: { pin: "Geroldsee, Krün, Deutschland" },
+
+  /* Alpe di Siusi: ปุ่มเส้นทางใช้พิกัดสถานีกระเช้า — ลองชื่อแล้ว 3 แบบ
+     (Cabinovia Alpe di Siusi / Seiser Alm Bahn / ชื่อ+ที่อยู่) Google คืนหน้าผลค้นหา
+     ไม่ใช่หมุดเดียว ซึ่งใช้เป็นปลายทางนำทางไม่ได้
+     drive: null = บังคับใช้พิกัด · ห้ามปล่อยให้ตกไปใช้ pin เพราะ "Alpe di Siusi" คือตัวที่ราบสูง
+     ซึ่งถนนขึ้นไปปิดรถยนต์ 09:00–17:00 — ส่งคนไปตรงนั้นคือส่งไปชนด่าน */
+  alpe_di_siusi: { pin: "Alpe di Siusi", drive: null },
+  val_di_funes:  { pin: "Chiesa di Santa Maddalena, Funes" },
+
+  passo_gardena: { pin: "Passo Gardena" },
+  passo_sella:   { pin: "Passo Sella" },
+  passo_pordoi:  { pin: "Passo Pordoi" },
+  falzarego:     { pin: "Passo Falzarego" },
+  passo_giau:    { pin: "Passo Giau" },
+
+  cortina_town:  { pin: "Cortina d'Ampezzo BL, Italia" },
+  bressanone:    { pin: "Bressanone BZ, Italia" },
+  chiusa:        { pin: "Chiusa BZ, Italia" },
+};
+
 const KIND_META = {
   base:  { label: "ที่พัก",          color: "#2C485E", icon: "🏠" },
   hike:  { label: "เส้นทางเดินป่า",  color: "#487E32", icon: "🥾" },
