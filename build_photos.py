@@ -13,7 +13,9 @@ import json, pathlib, re, shutil, subprocess, sys
 
 SRC = pathlib.Path("assets/photos")
 OUT = pathlib.Path("assets/photos_web")
-MAX_W = 1400          # กว้างพอสำหรับจอ retina ที่ความกว้างช่องราว 400–700 px
+# ช่องรูปกว้างสุดราว 260 px (แผงกว้าง 560 px หาร 2 คอลัมน์) จอ retina ต้องการราว 520 px
+# 1100 จึงเผื่อไว้เกินพอแล้ว · ขยับจาก 1400 ลงมาเพราะลดขนาดไฟล์ราว 35% โดยดูไม่ออก
+MAX_W = 1100
 EXTS = {".jpg", ".jpeg", ".png", ".webp", ".heic", ".tif", ".tiff"}
 PER_PLACE = 2
 
