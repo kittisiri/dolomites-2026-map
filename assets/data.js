@@ -19,7 +19,7 @@ const PLANS = {
     bases: ["margherita", "tyrolian"],   // เรียงตามลำดับวันที่เข้าพัก
     primary: "margherita",
     transit: "temblhof_to_margherita",
-    color: "#22c55e",
+    color: "#487E32",
   },
   B: {
     key: "B",
@@ -29,7 +29,7 @@ const PLANS = {
     bases: ["hoferhof"],
     primary: "hoferhof",
     transit: "temblhof_to_hoferhof",
-    color: "#38bdf8",
+    color: "#3D678A",
   },
 };
 const DEFAULT_PLAN = "A";
@@ -688,7 +688,7 @@ const PLACES = [
     ll: [46.48282, 12.05349], driveTo: [46.48282, 12.05349], routeKey: "passo_giau",
     driveLabel: "ยอดช่องเขา SP638 — ที่จอดริมทาง",
     blurb: "ช่องเขาที่หลายคนยกให้สวยที่สุดใน Dolomites — วิว Ra Gusela และ Nuvolau ตั้งตระหง่าน ถนนคดเคี้ยว 29 โค้ง เป็นจุดถ่ายพระอาทิตย์ตกระดับตำนาน",
-    stats: { dist: "เดินเล่นสั้น ๆ ได้", gain: "—", diff: "ขับรถ", dur: "แวะ 45–90 นาที", best: "🌅 <b>ช่วงเย็น–พระอาทิตย์ตก</b> — แสงสาดยอด Ra Gusela" },
+    stats: { dist: "เดินเล่นสั้น ๆ ได้", gain: "—", diff: "ขับรถ", dur: "แวะ 45–90 นาที", best: "🌅 ช่วงเย็น–พระอาทิตย์ตก — แสงสาดยอด Ra Gusela" },
     regs: ["parking_lines", "drones"],
     notes: [
       "🌅 <b>ที่นี่คือจุดปิดวันที่ดีที่สุดของวันฝั่งตะวันออก</b> — ควรไปช่วงเย็น ไม่ใช่ตอนบ่ายแก่ ๆ ที่แสงยังแข็ง",
@@ -955,16 +955,16 @@ const PLAN_A_SUGGESTIONS = [
 ];
 
 const KIND_META = {
-  base:  { label: "ที่พัก",          color: "#c026d3", icon: "🏠" },
-  hike:  { label: "เส้นทางเดินป่า",  color: "#059669", icon: "🥾" },
-  lake:  { label: "ทะเลสาบ",         color: "#0284c7", icon: "💧" },
-  view:  { label: "จุดชมวิว / ที่ราบสูง", color: "#d97706", icon: "🏔️" },
-  pass:  { label: "ช่องเขา",         color: "#7c3aed", icon: "🛣️" },
-  town:  { label: "เมือง",           color: "#64748b", icon: "🏘️" },
+  base:  { label: "ที่พัก",          color: "#2C485E", icon: "🏠" },
+  hike:  { label: "เส้นทางเดินป่า",  color: "#487E32", icon: "🥾" },
+  lake:  { label: "ทะเลสาบ",         color: "#5183A9", icon: "💧" },
+  view:  { label: "จุดชมวิว / ที่ราบสูง", color: "#A46604", icon: "🏔️" },
+  pass:  { label: "ช่องเขา",         color: "#8B564A", icon: "🛣️" },
+  town:  { label: "เมือง",           color: "#78716C", icon: "🏘️" },
 };
 
 const SEV_META = {
-  high: { label: "ต้องจองล่วงหน้า", color: "#dc2626" },
-  med:  { label: "มีข้อจำกัด",      color: "#ea580c" },
-  low:  { label: "กฎทั่วไป",        color: "#0891b2" },
+  high: { label: "ต้องจองล่วงหน้า", color: "#8B564A" },
+  med:  { label: "มีข้อจำกัด",      color: "#A46604" },
+  low:  { label: "กฎทั่วไป",        color: "#3D678A" },
 };

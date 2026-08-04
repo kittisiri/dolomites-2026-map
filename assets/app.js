@@ -92,19 +92,19 @@
     var meta = KIND_META[p.kind];
     var sev = topSeverity(p);
     var h = "<b>" + esc(p.name) + "</b>";
-    if (p.alt) h += '<br><span style="color:#94a3b8;font-size:12px">' + esc(p.alt) + "</span>";
-    h += '<div style="margin-top:6px;font-size:12px;color:#94a3b8">' + meta.icon + " " + meta.label;
+    if (p.alt) h += '<br><span style="color:var(--txt-muted);font-size:12px">' + esc(p.alt) + "</span>";
+    h += '<div style="margin-top:6px;font-size:12px;color:var(--txt-muted)">' + meta.icon + " " + meta.label;
     var dr = driveFromPlan(p.routeKey);
     if (dr) {
-      h += " · ใกล้สุด <b style='color:#e2e8f0'>" + dr.best.min + " นาที</b>" +
+      h += " · ใกล้สุด <b style='color:var(--stone-900)'>" + dr.best.min + " นาที</b>" +
            (dr.multi ? " (จาก " + esc(BASE_BY_KEY[dr.best.base].town) + ")" : "");
     }
     h += "</div>";
     if (sev === "high") {
-      h += '<div style="margin-top:6px;font-size:12px;color:#fca5a5">⚠️ ต้องจองล่วงหน้า — ดูรายละเอียดในแผงข้อมูล</div>';
+      h += '<div style="margin-top:6px;font-size:12px;color:var(--rose-700)">⚠️ ต้องจองล่วงหน้า — ดูรายละเอียดในแผงข้อมูล</div>';
     }
     h += '<a class="pop-btn" href="' + gmapsDir(p.driveTo || p.ll) + '" target="_blank" rel="noopener">เปิดใน Google Maps</a>';
-    h += ' <a class="pop-btn" style="background:#334155;color:#e2e8f0" href="#" data-open="' + p.id + '">รายละเอียด</a>';
+    h += ' <a class="pop-btn" style="background:var(--stone-600);color:var(--stone-900)" href="#" data-open="' + p.id + '">รายละเอียด</a>';
     return h;
   }
 
@@ -128,7 +128,7 @@
 
   /* ---------------------------------------------------------- route lines */
   var allRouteLines = [];
-  var BASE_COLOR = { margherita: "#22c55e", tyrolian: "#eab308", hoferhof: "#38bdf8" };
+  var BASE_COLOR = { margherita: "#487E32", tyrolian: "#A46604", hoferhof: "#3D678A" };
 
   function drawAllRoutes() {
     routeLayer.clearLayers();
@@ -139,7 +139,7 @@
         var r = set[key];
         if (!r || !r.coords || !r.coords.length) return;
         var line = L.polyline(r.coords, {
-          color: BASE_COLOR[bk] || "#38bdf8", weight: 2.5, opacity: 0.38
+          color: BASE_COLOR[bk] || "#3D678A", weight: 2.5, opacity: 0.38
         }).addTo(routeLayer);
         line.bindTooltip(routeLabel(bk, key, r), { sticky: true });
         allRouteLines.push({ key: key, base: bk, line: line });
@@ -148,7 +148,7 @@
     /* ขาเข้าทริปจาก Temblhof + ขาย้ายฐานกลางทริป (แผน A) */
     var t = ROUTES.transit && ROUTES.transit[plan().transit];
     if (t && t.coords) {
-      L.polyline(t.coords, { color: "#c026d3", weight: 3, opacity: 0.7, dashArray: "7 6" })
+      L.polyline(t.coords, { color: "#5183A9", weight: 3, opacity: 0.7, dashArray: "7 6" })
         .addTo(routeLayer)
         .bindTooltip("7 ก.ย. — Temblhof → " + esc(BASE_BY_KEY[plan().primary].label) +
                      " · " + t.km + " กม. / " + t.min + " นาที", { sticky: true });
@@ -156,14 +156,14 @@
     if (activePlan === "A") {
       var mv = ROUTES.transit && ROUTES.transit.margherita_to_tyrolian;
       if (mv && mv.coords) {
-        L.polyline(mv.coords, { color: "#f472b6", weight: 3.5, opacity: 0.8, dashArray: "3 7" })
+        L.polyline(mv.coords, { color: "#78716C", weight: 3.5, opacity: 0.8, dashArray: "3 7" })
           .addTo(routeLayer)
           .bindTooltip("9 ก.ย. — ย้ายฐาน (เส้นปกติ) S. Cristina → Valdaora · <b>" +
                        mv.km + " กม. / " + mv.min + " นาที</b><br>ไม่ผ่านช่องเขาที่มีข้อจำกัด", { sticky: true });
       }
       var sc = ROUTES.transit && ROUTES.transit.margherita_to_tyrolian_scenic;
       if (sc && sc.coords) {
-        L.polyline(sc.coords, { color: "#fb923c", weight: 3.5, opacity: 0.85, dashArray: "10 6" })
+        L.polyline(sc.coords, { color: "#A7695B", weight: 3.5, opacity: 0.85, dashArray: "10 6" })
           .addTo(routeLayer)
           .bindTooltip("9 ก.ย. — ย้ายฐาน (<b>เส้นสวย</b>) ผ่าน Passo Gardena → Corvara → Val Badia · <b>" +
                        sc.km + " กม. / " + sc.min + " นาที</b><br>" +
@@ -182,7 +182,7 @@
     allRouteLines.forEach(function (o) {
       var on = place && o.key === place.routeKey;
       o.line.setStyle({
-        color: on ? "#f97316" : (BASE_COLOR[o.base] || "#38bdf8"),
+        color: on ? "#8B564A" : (BASE_COLOR[o.base] || "#3D678A"),
         weight: on ? 5 : 2.5, opacity: on ? 0.95 : 0.18
       });
       if (on) o.line.bringToFront();
@@ -191,7 +191,7 @@
 
   function clearHighlight() {
     allRouteLines.forEach(function (o) {
-      o.line.setStyle({ color: BASE_COLOR[o.base] || "#38bdf8", weight: 2.5, opacity: 0.38 });
+      o.line.setStyle({ color: BASE_COLOR[o.base] || "#3D678A", weight: 2.5, opacity: 0.38 });
     });
   }
 
@@ -213,15 +213,15 @@
       return '<div class="row"><i style="background:' + KIND_META[k].color + '"></i>' + KIND_META[k].label + "</div>";
     }).join("");
     var h = rows + "<hr>" +
-      '<div class="row"><span style="color:#dc2626;font-weight:900">!</span> ต้องจองล่วงหน้า</div>';
+      '<div class="row"><span style="color:var(--rose-700);font-weight:900">!</span> ต้องจองล่วงหน้า</div>';
     planBaseKeys().forEach(function (bk) {
-      h += '<div class="row"><i style="background:' + (BASE_COLOR[bk] || "#38bdf8") +
+      h += '<div class="row"><i style="background:' + (BASE_COLOR[bk] || "#3D678A") +
            ';border-radius:2px;height:3px"></i> จาก ' + esc(BASE_BY_KEY[bk].town) + "</div>";
     });
-    h += '<div class="row"><i style="background:#c026d3;border-radius:2px;height:3px"></i> Temblhof → ฐานแรก</div>';
+    h += '<div class="row"><i style="background:#5183A9;border-radius:2px;height:3px"></i> Temblhof → ฐานแรก</div>';
     if (activePlan === "A") {
-      h += '<div class="row"><i style="background:#f472b6;border-radius:2px;height:3px"></i> ย้ายฐาน 9 ก.ย. (เส้นปกติ)</div>';
-      h += '<div class="row"><i style="background:#fb923c;border-radius:2px;height:3px"></i> ย้ายฐาน 9 ก.ย. (เส้นสวย)</div>';
+      h += '<div class="row"><i style="background:#78716C;border-radius:2px;height:3px"></i> ย้ายฐาน 9 ก.ย. (เส้นปกติ)</div>';
+      h += '<div class="row"><i style="background:#A7695B;border-radius:2px;height:3px"></i> ย้ายฐาน 9 ก.ย. (เส้นสวย)</div>';
     }
     return h;
   }
@@ -274,7 +274,7 @@
 
     h += '<div class="card-line">';
     if (p.kind === "base") {
-      h += "<span><b>" + esc(p.dates) + "</b></span>";
+      h += "<span>" + p.dates + "</span>";
     } else if (dr) {
       if (dr.multi && dr.worst.min - dr.best.min > 5) {
         h += "<span>🚗 <b>" + dr.best.min + " นาที</b> จาก " + esc(BASE_BY_KEY[dr.best.base].town) +
@@ -308,12 +308,12 @@
       if (!activeKinds[kind]) return;
       var group = PLACES.filter(function (p) { return p.kind === kind && inActivePlan(p); });
       if (!group.length) return;
-      html += '<div style="font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:' +
-              KIND_META[kind].color + ';font-weight:700;margin:14px 0 7px">' +
+      html += '<div style="font-size:12px;line-height:1.7;text-transform:uppercase;letter-spacing:.04em;color:' +
+              KIND_META[kind].color + ';font-weight:700;margin:24px 0 8px">' +
               KIND_META[kind].icon + " " + KIND_META[kind].label + "</div>";
       html += group.map(placeCard).join("");
     });
-    list.innerHTML = html || '<p style="color:#94a3b8">ไม่มีสถานที่ในหมวดที่เลือก</p>';
+    list.innerHTML = html || '<p style="color:var(--txt-muted)">ไม่มีสถานที่ในหมวดที่เลือก</p>';
     list.querySelectorAll(".card").forEach(function (c) {
       c.addEventListener("click", function () { openDetail(c.getAttribute("data-id")); });
     });
@@ -337,7 +337,7 @@
     if (reg.note)    h += '<div class="reg-note">' + reg.note + "</div>";
     if (reg.recheck) h += '<div class="reg-recheck">🔁 <b>ต้องเช็กซ้ำ:</b> ' + reg.recheck + "</div>";
     if (reg.sources && reg.sources.length) {
-      h += '<div class="reg-src"><b style="color:#94a3b8">แหล่งอ้างอิง</b>' +
+      h += '<div class="reg-src"><b style="color:var(--txt-muted)">แหล่งอ้างอิง</b>' +
            reg.sources.map(function (s) {
              return '<a href="' + s.url + '" target="_blank" rel="noopener">↗ ' + esc(s.label) + "</a>";
            }).join("") + "</div>";
@@ -377,11 +377,11 @@
     /* --- ที่พัก --- */
     if (p.kind === "base") {
       h += "<h3>ข้อมูลที่พัก</h3><dl class=statgrid>";
-      h += "<dt>วันที่</dt><dd>" + esc(p.dates) + "</dd>";
-      h += "<dt>เวลาเช็กอิน/เอาต์</dt><dd>" + esc(p.checkin) + "</dd>";
+      h += "<dt>วันที่</dt><dd>" + p.dates + "</dd>";
+      h += "<dt>เวลาเช็กอิน/เอาต์</dt><dd>" + p.checkin + "</dd>";
       h += "<dt>ที่อยู่</dt><dd>" + esc(p.address) + "</dd>";
-      h += "<dt>โทรศัพท์</dt><dd><a href='tel:" + p.phone.replace(/\s/g, "") + "' style='color:#38bdf8'>" + esc(p.phone) + "</a></dd>";
-      if (p.web) h += "<dt>เว็บไซต์</dt><dd><a href='" + p.web + "' target='_blank' rel='noopener' style='color:#38bdf8'>" + esc(p.web.replace(/^https?:\/\//, "")) + "</a></dd>";
+      h += "<dt>โทรศัพท์</dt><dd><a href='tel:" + p.phone.replace(/\s/g, "") + "' >" + esc(p.phone) + "</a></dd>";
+      if (p.web) h += "<dt>เว็บไซต์</dt><dd><a href='" + p.web + "' target='_blank' rel='noopener' >" + esc(p.web.replace(/^https?:\/\//, "")) + "</a></dd>";
       h += "</dl>";
     }
 
@@ -391,11 +391,11 @@
       dr.per.forEach(function (x) {
         var isBest = x.base === dr.best.base;
         h += "<dt>" + esc(BASE_BY_KEY[x.base].town) + "</dt><dd" +
-             (isBest ? ' style="color:#86efac"' : ' style="opacity:.7"') + ">" +
+             (isBest ? ' style="color:var(--green-700)"' : ' style="opacity:.7"') + ">" +
              x.km + " กม. · " + x.min + " นาที" + (isBest ? "  ← ใกล้กว่า" : "") + "</dd>";
       });
       h += "</dl>";
-      h += '<p style="font-size:12.5px;color:#94a3b8;margin-top:8px">จัดวันให้ตรงกับฐานที่ใกล้กว่า จะประหยัดเวลาขับได้มาก</p>';
+      h += '<p style="font-size:12.5px;color:var(--txt-muted);margin-top:8px">จัดวันให้ตรงกับฐานที่ใกล้กว่า จะประหยัดเวลาขับได้มาก</p>';
     }
 
     /* --- สถิติเส้นทางเดิน --- */
@@ -413,7 +413,7 @@
 
     /* --- ปุ่มนำทาง --- */
     h += "<h3>นำทาง</h3>";
-    if (p.driveLabel) h += '<p style="font-size:13.3px;color:#94a3b8">🅿️ ' + esc(p.driveLabel) + "</p>";
+    if (p.driveLabel) h += '<p style="font-size:13.3px;color:var(--txt-muted)">🅿️ ' + esc(p.driveLabel) + "</p>";
     h += '<a class="btn" href="' + gmapsDir(p.driveTo || p.ll) + '" target="_blank" rel="noopener">🧭 เปิดเส้นทางใน Google Maps</a>';
     h += '<a class="btn alt" href="' + gmapsPin(p.ll) + '" target="_blank" rel="noopener">📍 ดูหมุดใน Google Maps</a>';
     h += '<button class="btn alt" id="shareBtn" data-id="' + p.id + '">🔗 คัดลอกลิงก์หน้านี้</button>';
@@ -433,7 +433,7 @@
       var rank = { high: 0, med: 1, low: 2 };
       regs.sort(function (a, b) { return rank[a.severity] - rank[b.severity]; });
       h += "<h3>กฎการเข้าถึงปี 2026 (" + regs.length + " ข้อ)</h3>";
-      h += '<p style="font-size:12.5px;color:#94a3b8;margin-top:-4px">คลิกที่หัวข้อเพื่อดูรายละเอียด · แต่ละบรรทัดมีป้ายบอกว่ายืนยันแล้วหรือยัง</p>';
+      h += '<p style="font-size:12.5px;color:var(--txt-muted);margin-top:-4px">คลิกที่หัวข้อเพื่อดูรายละเอียด · แต่ละบรรทัดมีป้ายบอกว่ายืนยันแล้วหรือยัง</p>';
       h += regs.map(regBlockHtml).join("");
     }
 
@@ -531,7 +531,7 @@
     var nBlock = BOOKINGS.filter(function (b) { return b.sev === "block" || b.sev === "money"; }).length;
 
     h += '<h3 class="sec">ต้องจองอะไร ภายในเมื่อไร</h3>';
-    h += '<p style="font-size:12.5px;color:#94a3b8;margin-top:-4px">' +
+    h += '<p style="font-size:12.5px;color:var(--txt-muted);margin-top:-4px">' +
          "เรียงตามความเร่งด่วน · <b>" + nBlock + " รายการแรกคือของจริง</b> ที่พลาดแล้วแก้ไม่ได้</p>";
 
     BOOKINGS.slice().sort(function (a, b) { return sevOrder[a.sev] - sevOrder[b.sev]; })
@@ -569,8 +569,8 @@
           h += '<button class="stop" data-id="' + id + '">' +
                '<span style="color:' + meta.color + '">' + meta.icon + "</span> " +
                esc(p.name) +
-               (dr ? ' <b style="color:#7dd3fc">' + dr.best.min + " น.</b>" : "") +
-               (needsBooking(p) ? ' <span style="color:#fca5a5;font-weight:900">!</span>' : "") +
+               (dr ? ' <b style="color:var(--blue-700)">' + dr.best.min + " น.</b>" : "") +
+               (needsBooking(p) ? ' <span style="color:var(--rose-700);font-weight:900">!</span>' : "") +
                "</button>";
         });
         h += "</div>";
@@ -590,7 +590,7 @@
 
     /* ---- ข้อเสนอ ---- */
     h += '<h3 class="sec">ข้อเสนอของผม</h3>';
-    h += '<p style="font-size:12.5px;color:#94a3b8;margin-top:-4px">เรียงจากที่ควรทำก่อน</p>';
+    h += '<p style="font-size:12.5px;color:var(--txt-muted);margin-top:-4px">เรียงจากที่ควรทำก่อน</p>';
     var order = { high: 0, med: 1 };
     PLAN_A_SUGGESTIONS.slice().sort(function (a, b) { return order[a.sev] - order[b.sev]; })
       .forEach(function (s, i) {
@@ -622,7 +622,7 @@
     }
     var A = PLANS.A.bases, B = PLANS.B.bases;
 
-    var h = '<div class="notice">✅ <b>ตัดสินใจแล้ว: ใช้แผน A</b> — Margherita จองแล้ว · Hofer Hof ยกเลิกแล้ว<br>' +
+    var h = '<div class="notice success">✅ <b>ตัดสินใจแล้ว: ใช้แผน A</b> — Margherita จองแล้ว · Hofer Hof ยกเลิกแล้ว<br>' +
       'ตารางข้างล่างเก็บไว้เป็นบันทึกเหตุผล ไม่ใช่ตัวเลือกที่ยังเปิดอยู่</div>' +
       '<div class="cmp-intro"><b>แผน A</b> ย้ายฐาน 2 ที่ (S. Cristina 7–9 ก.ย. → Valdaora 9–11 ก.ย.) · ' +
       "<b>แผน B</b> อยู่ Hofer Hof ที่เดียว 4 คืน (จองแล้ว ยกเลิกฟรีถึง 23 ส.ค. 2026)<br>" +
@@ -650,7 +650,7 @@
       h += '<td style="opacity:.6">' + (mg === 0 ? "เดินถึง" : mg) + "</td>";
       h += '<td style="opacity:.6">' + ty + "</td>";
       h += '<td class="' + (b < a ? "best" : "") + '">' + b + "</td>";
-      h += '<td style="' + (diff > 0 ? "color:#86efac" : diff < 0 ? "color:#fca5a5" : "opacity:.5") + '">' +
+      h += '<td style="' + (diff > 0 ? "color:var(--green-700)" : diff < 0 ? "color:var(--rose-700)" : "opacity:.5") + '">' +
            (diff === null ? "–" : (diff > 0 ? "−" + diff : diff === 0 ? "0" : "+" + (-diff))) + "</td>";
       h += "</tr>";
     });
@@ -659,11 +659,11 @@
       '<td class="' + (totA <= totB ? "best" : "") + '">' + totA + "</td>" +
       '<td colspan="2" style="opacity:.4">—</td>' +
       '<td class="' + (totB < totA ? "best" : "") + '">' + totB + "</td>" +
-      '<td style="color:#86efac">−' + (totB - totA) + "</td></tr></tfoot></table></div>";
+      '<td style="color:var(--green-700)">−' + (totB - totA) + "</td></tr></tfoot></table></div>";
 
-    h += '<p style="font-size:11.5px;color:#94a3b8;margin-top:6px">' +
-      'คอลัมน์ “ต่าง” = แผน A ประหยัดกว่ากี่นาที (<span style="color:#86efac">เขียว = แผน A เร็วกว่า</span>, ' +
-      '<span style="color:#fca5a5">แดง = แผน B เร็วกว่า</span>)</p>';
+    h += '<p style="font-size:11.5px;color:var(--txt-muted);margin-top:6px">' +
+      'คอลัมน์ “ต่าง” = แผน A ประหยัดกว่ากี่นาที (<span style="color:var(--green-700)">เขียว = แผน A เร็วกว่า</span>, ' +
+      '<span style="color:var(--rose-700)">แดง = แผน B เร็วกว่า</span>)</p>';
 
     /* -------- คำตัดสิน -------- */
     var west = ["seceda", "alpe_di_siusi", "adolf_munkel", "val_di_funes", "passo_gardena"];
@@ -698,8 +698,8 @@
 
     /* -------- ตารางอ้างอิงฐานอื่น -------- */
     var refs = BASES.filter(function (b) { return b.ref; });
-    h += '<h3 style="font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:#38bdf8;margin:20px 0 8px">ฐานอ้างอิงอื่น ๆ</h3>';
-    h += '<p style="font-size:12.5px;color:#94a3b8;margin-top:-4px">ถ้าจะเทียบกับการพักในหุบเขาหลักแบบฐานเดียว</p>';
+    h += '<h3 class="sec">ฐานอ้างอิงอื่น ๆ</h3>';
+    h += '<p style="font-size:12.5px;color:var(--txt-muted);margin-top:-4px">ถ้าจะเทียบกับการพักในหุบเขาหลักแบบฐานเดียว</p>';
     h += '<div style="overflow-x:auto"><table class="cmp"><thead><tr><th>จุดหมาย</th>' +
       refs.map(function (b) { return "<th>" + esc(b.label) + "</th>"; }).join("") + "</tr></thead><tbody>";
     var refTot = {}; refs.forEach(function (b) { refTot[b.key] = 0; });
