@@ -316,6 +316,17 @@ h3.sec {
   margin: 32px 0 8px; font-weight: 700;
 }
 
+/* หัวข้อกลุ่มในรายการ "สถานที่" และ "กฎ 2026" — ขนาดเดียวกับ h3.sec แต่ใช้สีของหมวด */
+.grp-head {
+  font-size: 24px; line-height: 1.25; font-weight: 700;
+  margin: 32px 0 8px;
+}
+.grp-head:first-child { margin-top: 8px; }
+.grp-head small {
+  display: block; font-size: 13px; font-weight: 400; line-height: 1.6;
+  color: var(--txt-muted); margin-top: 2px;
+}
+
 .sugg {
   border: 1px solid var(--border); border-left: 4px solid var(--border);
   background: var(--card); box-shadow: var(--shadow);
@@ -460,5 +471,5 @@ tfoot td {
   #detail .inner { padding: 16px 20px 64px; }
   .pane { padding: 16px; }
   #detail h2 { font-size: 24px; }
-  #detail h3, h3.sec { font-size: 20px; }
+  #detail h3, h3.sec, .grp-head { font-size: 20px; }
 }

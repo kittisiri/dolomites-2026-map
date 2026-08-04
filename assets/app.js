@@ -273,9 +273,9 @@
       if (!activeKinds[kind]) return;
       var group = PLACES.filter(function (p) { return p.kind === kind; });
       if (!group.length) return;
-      html += '<div style="font-size:12px;line-height:1.7;text-transform:uppercase;letter-spacing:.04em;color:' +
-              KIND_META[kind].color + ';font-weight:700;margin:24px 0 8px">' +
-              KIND_META[kind].icon + " " + KIND_META[kind].label + "</div>";
+      html += '<div class="grp-head" style="color:' + KIND_META[kind].color + '">' +
+              KIND_META[kind].icon + " " + KIND_META[kind].label +
+              " <small>" + group.length + " แห่ง</small></div>";
       html += group.map(placeCard).join("");
     });
     list.innerHTML = html || '<p style="color:var(--txt-muted)">ไม่มีสถานที่ในหมวดที่เลือก</p>';
@@ -429,10 +429,14 @@
   });
 
   /* ------------------------------------------------------ pane: กฎทั้งหมด */
+  var SEV_GROUP = {
+    high: { icon: "🔴", hint: "ไม่จองล่วงหน้า = เข้าไม่ได้" },
+    med:  { icon: "🟠", hint: "เข้าได้ แต่มีเงื่อนไข เวลา หรือค่าใช้จ่าย" },
+    low:  { icon: "🔵", hint: "กฎพื้นฐานที่ควรรู้ไว้" },
+  };
+
   function renderRegs() {
     var el = document.getElementById("regList");
-    var rank = { high: 0, med: 1, low: 2 };
-    var sorted = REGS.slice().sort(function (a, b) { return rank[a.severity] - rank[b.severity]; });
 
     var counts = { high: 0, med: 0, low: 0 };
     REGS.forEach(function (r) { counts[r.severity]++; });
@@ -450,7 +454,17 @@
       "🟠 มีข้อจำกัด " + counts.med + " เรื่อง · " +
       "🔵 กฎทั่วไป " + counts.low + " เรื่อง</div>";
 
-    h += sorted.map(regBlockHtml).join("");
+    /* จัดกลุ่มตามความรุนแรง — เรียงในกลุ่มตามลำดับเดิมในข้อมูล */
+    ["high", "med", "low"].forEach(function (sev) {
+      var group = REGS.filter(function (r) { return r.severity === sev; });
+      if (!group.length) return;
+      var g = SEV_GROUP[sev];
+      h += '<div class="grp-head" style="color:' + SEV_META[sev].color + '">' +
+           g.icon + " " + SEV_META[sev].label +
+           " <small>" + group.length + " เรื่อง · " + g.hint + "</small></div>";
+      h += group.map(regBlockHtml).join("");
+    });
+
     el.innerHTML = h;
     bindRegToggles(el);
     /* กางข้อที่ต้องจองไว้ทั้งหมด */
