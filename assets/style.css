@@ -315,10 +315,6 @@ h3.sec {
   font-size: 24px; line-height: 1.25; color: var(--heading);
   margin: 32px 0 8px; font-weight: 700;
 }
-ul.proscons { margin: 0; padding-left: 24px; }
-ul.proscons li { margin-bottom: 8px; font-size: 16px; line-height: 1.5; }
-ul.proscons.pros li::marker { content: "✓  "; color: var(--green-600); font-weight: 700; }
-ul.proscons.cons li::marker { content: "✕  "; color: var(--rose-700); font-weight: 700; }
 
 .sugg {
   border: 1px solid var(--border); border-left: 4px solid var(--border);

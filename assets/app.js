@@ -566,12 +566,6 @@
       h += "</div>";
     });
 
-    /* ---- ข้อดี / ข้อเสีย ---- */
-    h += '<h3 class="sec">ข้อดีของแผนนี้</h3><ul class="proscons pros">' +
-      PLAN_PROS.map(function (x) { return "<li>" + x + "</li>"; }).join("") + "</ul>";
-    h += '<h3 class="sec">ข้อเสียของแผนนี้</h3><ul class="proscons cons">' +
-      PLAN_CONS.map(function (x) { return "<li>" + x + "</li>"; }).join("") + "</ul>";
-
     /* ---- ข้อเสนอ ---- */
     h += '<h3 class="sec">ข้อเสนอของผม</h3>';
     h += '<p style="font-size:12.5px;color:var(--txt-muted);margin-top:-4px">เรียงจากที่ควรทำก่อน</p>';
