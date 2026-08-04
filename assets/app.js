@@ -284,6 +284,24 @@
     });
   }
 
+  /* --------------------------------------------------------------- รูป
+     รูป 2 ใบต่อสถานที่ · ไฟล์อยู่ใน assets/photos/ ไม่ดึงจากเน็ตตอนรันไทม์
+     ใบไหนโหลดไม่ขึ้นให้ซ่อนช่องนั้นไป ดีกว่าโชว์กรอบว่างหรือไอคอนรูปแตก */
+  function photosHtml(p) {
+    var ph = (p.photos || []).slice(0, 2);
+    if (!ph.length) return "";
+    return '<div class="photos">' + ph.map(function (x) {
+      var img = '<img src="' + x.src + '" alt="' + esc(p.name) + '" loading="lazy" ' +
+                'onerror="this.closest(\'figure\').style.display=\'none\'">';
+      var cap = x.by
+        ? "<figcaption>" + (x.url
+            ? '<a href="' + x.url + '" target="_blank" rel="noopener">' + esc(x.by) + "</a>"
+            : esc(x.by)) + "</figcaption>"
+        : "";
+      return "<figure>" + img + cap + "</figure>";
+    }).join("") + "</div>";
+  }
+
   /* ------------------------------------------------------- detail panel */
   function regBlockHtml(reg, idx) {
     var h = '<div class="reg sev-' + reg.severity + '" data-reg="' + reg.id + '">';
@@ -338,6 +356,9 @@
     }
 
     h += "<p>" + p.blurb + "</p>";
+
+    /* --- รูป 2 ใบ (1 แถว 2 คอลัมน์) --- */
+    h += photosHtml(p);
 
     /* --- ที่พัก --- */
     if (p.kind === "base") {

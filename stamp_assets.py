@@ -16,9 +16,12 @@ TH_MONTHS = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "
              "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."]
 
 def updated_at():
-    """วันเวลาที่อัปเดตล่าสุด ตามเวลาเครื่องที่รัน deploy (กรุงเทพฯ)"""
+    """วันเวลาที่อัปเดตล่าสุด ตามเวลาเครื่องที่รัน deploy (กรุงเทพฯ)
+    เขียนสองแบบ — จอกว้างใช้แบบเต็ม จอแคบใช้แบบสั้นให้พอดีข้างชื่อเรื่อง (สลับด้วย CSS)"""
     t = datetime.now()
-    return f"อัปเดต {t.day} {TH_MONTHS[t.month - 1]} {t.year} · {t:%H:%M}"
+    d = f"{t.day} {TH_MONTHS[t.month - 1]}"
+    return (f'<span class="hm-long">อัปเดต {d} {t.year} · {t:%H:%M}</span>'
+            f'<span class="hm-short">{d} · {t:%H:%M}</span>')
 
 p = pathlib.Path("index.html")
 s = p.read_text(encoding="utf-8")
@@ -32,6 +35,6 @@ s2, n_meta = re.subn(r'(<div class="hdr-meta">).*?(</div>)',
 p.write_text(s2, encoding="utf-8")
 n = len(re.findall(r'\?v=' + re.escape(v), s2))
 print(f"stamped {n} asset links with v={v}")
-print(f"header updated-at set to: {stamp}")
+print("header updated-at set to: " + re.sub(r"<[^>]+>", " | ", stamp).strip(" |"))
 if n == 0: sys.exit("nothing stamped — check the pattern")
 if n_meta != 1: sys.exit(f"expected 1 hdr-meta div, found {n_meta} — check index.html")

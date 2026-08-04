@@ -82,6 +82,7 @@ header h1 {
 }
 header h1 span { color: var(--blue-600); font-weight: 500; }
 .hdr-meta { font-size: 14px; line-height: 1.6; color: var(--txt-muted); white-space: nowrap; }
+.hdr-meta .hm-short { display: none; }   /* จอแคบสลับมาใช้อันนี้ — ดู @media ท้ายไฟล์ */
 .hdr-spacer { flex: 1; }
 
 #menuBtn {
@@ -192,6 +193,23 @@ button:focus-visible, a:focus-visible, .chip:focus-visible, .stop:focus-visible 
   margin: 32px 0 8px; font-weight: 700;
 }
 #detail p { margin: 0 0 8px; }
+
+/* ---------- รูปสถานที่: 1 แถว 2 คอลัมน์ ใต้คำอธิบาย ---------- */
+.photos {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  margin: 16px 0 8px;
+}
+.photos figure { margin: 0; min-width: 0; }
+.photos img {
+  display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover;
+  border-radius: var(--radius); border: 1px solid var(--border);
+  background: var(--stone-200);   /* พื้นระหว่างรอโหลด — ไม่ให้หน้ากระตุก */
+}
+.photos figcaption {
+  font-size: 11px; line-height: 1.5; color: var(--txt-muted);
+  margin-top: 4px; overflow-wrap: anywhere;
+}
+.photos figcaption a { color: var(--txt-muted); }
 
 .statgrid {
   display: grid; grid-template-columns: auto 1fr; gap: 8px 24px;
@@ -459,7 +477,10 @@ tfoot td {
   header { padding: 0 16px; gap: 8px; }
   header h1 { font-size: 16px; }
   header h1 span { display: none; }
-  .hdr-meta { display: none; }
+  /* วันเวลาอัปเดตยังต้องเห็นบนมือถือ — ย่อเหลือ "4 ส.ค. · 18:09" ให้พอดีข้างชื่อเรื่อง */
+  .hdr-meta { font-size: 12px; }
+  .hdr-meta .hm-long  { display: none; }
+  .hdr-meta .hm-short { display: inline; }
   #layout { position: relative; }
   #sidebar {
     position: absolute; inset: 0; z-index: 1050;
