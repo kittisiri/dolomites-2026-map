@@ -11,16 +11,13 @@
   var BASE_BY_KEY = {};
   BASES.forEach(function (b) { BASE_BY_KEY[b.key] = b; });
 
-  /* ------------------------------------------------------------ แผน A / B */
-  var activePlan = DEFAULT_PLAN;
+  /* ฐานที่พักสองที่ เรียงตามลำดับวันเข้าพัก */
+  var BASE_KEYS = BASES.map(function (b) { return b.key; });
 
-  function plan() { return PLANS[activePlan]; }
-  function planBaseKeys() { return plan().bases; }
-
-  /* เวลาขับจากแผนปัจจุบันไปจุดหนึ่ง — คืนค่าที่ดีที่สุดและรายละเอียดรายฐาน */
-  function driveFromPlan(routeKey) {
+  /* เวลาขับจากฐานไปจุดหนึ่ง — คืนค่าที่ดีที่สุดและรายละเอียดรายฐาน */
+  function driveFromBases(routeKey) {
     if (!routeKey) return null;
-    var per = planBaseKeys().map(function (bk) {
+    var per = BASE_KEYS.map(function (bk) {
       var r = ROUTES.from_base[bk] && ROUTES.from_base[bk][routeKey];
       return r ? { base: bk, km: r.km, min: r.min } : null;
     }).filter(Boolean);
@@ -94,7 +91,7 @@
     var h = "<b>" + esc(p.name) + "</b>";
     if (p.alt) h += '<br><span style="color:var(--txt-muted);font-size:12px">' + esc(p.alt) + "</span>";
     h += '<div style="margin-top:6px;font-size:12px;color:var(--txt-muted)">' + meta.icon + " " + meta.label;
-    var dr = driveFromPlan(p.routeKey);
+    var dr = driveFromBases(p.routeKey);
     if (dr) {
       h += " · ใกล้สุด <b style='color:var(--stone-900)'>" + dr.best.min + " นาที</b>" +
            (dr.multi ? " (จาก " + esc(BASE_BY_KEY[dr.best.base].town) + ")" : "");
@@ -128,12 +125,12 @@
 
   /* ---------------------------------------------------------- route lines */
   var allRouteLines = [];
-  var BASE_COLOR = { margherita: "#487E32", tyrolian: "#A46604", hoferhof: "#3D678A" };
+  var BASE_COLOR = { margherita: "#487E32", tyrolian: "#A46604" };
 
   function drawAllRoutes() {
     routeLayer.clearLayers();
     allRouteLines = [];
-    planBaseKeys().forEach(function (bk) {
+    BASE_KEYS.forEach(function (bk) {
       var set = ROUTES.from_base[bk] || {};
       Object.keys(set).forEach(function (key) {
         var r = set[key];
@@ -145,15 +142,15 @@
         allRouteLines.push({ key: key, base: bk, line: line });
       });
     });
-    /* ขาเข้าทริปจาก Temblhof + ขาย้ายฐานกลางทริป (แผน A) */
-    var t = ROUTES.transit && ROUTES.transit[plan().transit];
+    /* ขาเข้าทริปจาก Temblhof + ขาย้ายฐานกลางทริป 9 ก.ย. */
+    var t = ROUTES.transit && ROUTES.transit.temblhof_to_margherita;
     if (t && t.coords) {
       L.polyline(t.coords, { color: "#5183A9", weight: 3, opacity: 0.7, dashArray: "7 6" })
         .addTo(routeLayer)
-        .bindTooltip("7 ก.ย. — Temblhof → " + esc(BASE_BY_KEY[plan().primary].label) +
+        .bindTooltip("7 ก.ย. — Temblhof → " + esc(BASE_BY_KEY.margherita.label) +
                      " · " + t.km + " กม. / " + t.min + " นาที", { sticky: true });
     }
-    if (activePlan === "A") {
+    {
       var mv = ROUTES.transit && ROUTES.transit.margherita_to_tyrolian;
       if (mv && mv.coords) {
         L.polyline(mv.coords, { color: "#78716C", weight: 3.5, opacity: 0.8, dashArray: "3 7" })
@@ -214,15 +211,13 @@
     }).join("");
     var h = rows + "<hr>" +
       '<div class="row"><span style="color:var(--rose-700);font-weight:900">!</span> ต้องจองล่วงหน้า</div>';
-    planBaseKeys().forEach(function (bk) {
+    BASE_KEYS.forEach(function (bk) {
       h += '<div class="row"><i style="background:' + (BASE_COLOR[bk] || "#3D678A") +
            ';border-radius:2px;height:3px"></i> จาก ' + esc(BASE_BY_KEY[bk].town) + "</div>";
     });
-    h += '<div class="row"><i style="background:#5183A9;border-radius:2px;height:3px"></i> Temblhof → ฐานแรก</div>';
-    if (activePlan === "A") {
-      h += '<div class="row"><i style="background:#78716C;border-radius:2px;height:3px"></i> ย้ายฐาน 9 ก.ย. (เส้นปกติ)</div>';
-      h += '<div class="row"><i style="background:#A7695B;border-radius:2px;height:3px"></i> ย้ายฐาน 9 ก.ย. (เส้นสวย)</div>';
-    }
+    h += '<div class="row"><i style="background:#5183A9;border-radius:2px;height:3px"></i> Temblhof → S. Cristina</div>';
+    h += '<div class="row"><i style="background:#78716C;border-radius:2px;height:3px"></i> ย้ายฐาน 9 ก.ย. (เส้นปกติ)</div>';
+    h += '<div class="row"><i style="background:#A7695B;border-radius:2px;height:3px"></i> ย้ายฐาน 9 ก.ย. (เส้นสวย)</div>';
     return h;
   }
   legend.addTo(map);
@@ -248,16 +243,10 @@
     });
   }
 
-  /* ที่พักของอีกแผนหนึ่งไม่ต้องโชว์ */
-  function inActivePlan(p) {
-    if (p.kind !== "base") return true;
-    return !p.plan || p.plan === "both" || p.plan === activePlan;
-  }
-
   function syncMarkers() {
     PLACES.forEach(function (p) {
       var m = markers[p.id];
-      var show = activeKinds[p.kind] && inActivePlan(p);
+      var show = activeKinds[p.kind];
       if (show) { if (!markerLayer.hasLayer(m)) markerLayer.addLayer(m); }
       else if (markerLayer.hasLayer(m)) markerLayer.removeLayer(m);
     });
@@ -265,7 +254,7 @@
 
   function placeCard(p) {
     var meta = KIND_META[p.kind];
-    var dr = driveFromPlan(p.routeKey);
+    var dr = driveFromBases(p.routeKey);
     var h = '<div class="card' + (selectedId === p.id ? " sel" : "") + '" data-id="' + p.id + '">';
     h += '<div class="card-top"><span style="color:' + meta.color + '">' + meta.icon + "</span>" +
          '<span class="card-name">' + esc(p.name) + "</span>";
@@ -306,7 +295,7 @@
     var html = "";
     order.forEach(function (kind) {
       if (!activeKinds[kind]) return;
-      var group = PLACES.filter(function (p) { return p.kind === kind && inActivePlan(p); });
+      var group = PLACES.filter(function (p) { return p.kind === kind; });
       if (!group.length) return;
       html += '<div style="font-size:12px;line-height:1.7;text-transform:uppercase;letter-spacing:.04em;color:' +
               KIND_META[kind].color + ';font-weight:700;margin:24px 0 8px">' +
@@ -361,7 +350,7 @@
     renderPlaces();
 
     var meta = KIND_META[p.kind];
-    var dr = driveFromPlan(p.routeKey);
+    var dr = driveFromBases(p.routeKey);
     var h = "";
 
     h += "<h2>" + esc(p.name) + "</h2>";
@@ -505,20 +494,15 @@
     el.querySelectorAll(".reg.sev-high").forEach(function (n) { n.classList.add("open"); });
   }
 
-  /* ---------------------------------------------------- pane: แผน A */
+  /* -------------------------------------------------- pane: แผนเที่ยว */
   var SEV_ICON = { high: "🔴", med: "🟠", ok: "🟢" };
 
   function renderItinerary() {
     var el = document.getElementById("itinPane");
 
-    var h = '<div class="notice info"><b>แผนเที่ยวร่างของแผน A</b><br>' +
+    var h = '<div class="notice info"><b>แผนเที่ยวร่าง 7–11 ก.ย.</b><br>' +
       "คลิกชื่อสถานที่ในแต่ละวันเพื่อเปิดรายละเอียด ระยะทาง และกฎที่ต้องจอง · " +
       'ตัวเลขเวลาขับคิดจากฐานของวันนั้น</div>';
-
-    if (activePlan !== "A") {
-      h += '<div class="notice">❌ <b>แผน B ยกเลิกไปแล้ว</b> — Hofer Hof ยกเลิกเรียบร้อย เก็บไว้เป็นบันทึกว่าทำไมถึงเลือกแผน A<br>ตอนนี้กำลังดู <b>แผน B</b> อยู่ — ตัวเลขเวลาขับในหน้านี้อ้างอิงฐานของแผน A ' +
-           '<button class="btn alt" id="toPlanA" style="margin-top:8px">สลับไปแผน A</button></div>';
-    }
 
     /* ---- ต้องจองอะไร ภายในเมื่อไร ---- */
     var SEV_LABEL = {
@@ -565,7 +549,7 @@
           var p = PLACE_BY_ID[id];
           if (!p) return;
           var meta = KIND_META[p.kind];
-          var dr = driveFromPlan(p.routeKey);
+          var dr = driveFromBases(p.routeKey);
           h += '<button class="stop" data-id="' + id + '">' +
                '<span style="color:' + meta.color + '">' + meta.icon + "</span> " +
                esc(p.name) +
@@ -583,16 +567,16 @@
     });
 
     /* ---- ข้อดี / ข้อเสีย ---- */
-    h += '<h3 class="sec">ข้อดีของแผน A</h3><ul class="proscons pros">' +
-      PLAN_A_PROS.map(function (x) { return "<li>" + x + "</li>"; }).join("") + "</ul>";
-    h += '<h3 class="sec">ข้อเสียของแผน A</h3><ul class="proscons cons">' +
-      PLAN_A_CONS.map(function (x) { return "<li>" + x + "</li>"; }).join("") + "</ul>";
+    h += '<h3 class="sec">ข้อดีของแผนนี้</h3><ul class="proscons pros">' +
+      PLAN_PROS.map(function (x) { return "<li>" + x + "</li>"; }).join("") + "</ul>";
+    h += '<h3 class="sec">ข้อเสียของแผนนี้</h3><ul class="proscons cons">' +
+      PLAN_CONS.map(function (x) { return "<li>" + x + "</li>"; }).join("") + "</ul>";
 
     /* ---- ข้อเสนอ ---- */
     h += '<h3 class="sec">ข้อเสนอของผม</h3>';
     h += '<p style="font-size:12.5px;color:var(--txt-muted);margin-top:-4px">เรียงจากที่ควรทำก่อน</p>';
     var order = { high: 0, med: 1 };
-    PLAN_A_SUGGESTIONS.slice().sort(function (a, b) { return order[a.sev] - order[b.sev]; })
+    PLAN_SUGGESTIONS.slice().sort(function (a, b) { return order[a.sev] - order[b.sev]; })
       .forEach(function (s, i) {
         h += '<div class="sugg sev-' + s.sev + '"><div class="sugg-t">' +
              (i + 1) + ". " + s.t + "</div><div class=\"sugg-d\">" + s.d + "</div></div>";
@@ -606,8 +590,6 @@
     el.querySelectorAll(".stop").forEach(function (b) {
       b.addEventListener("click", function () { openDetail(b.getAttribute("data-id")); });
     });
-    var toA = el.querySelector("#toPlanA");
-    if (toA) toA.addEventListener("click", function () { setPlan("A"); });
   }
 
   /* ---------------------------------------------------------------- tabs */
@@ -635,49 +617,10 @@
       var i = kv.indexOf("=");
       if (i > 0) parts[kv.slice(0, i)] = decodeURIComponent(kv.slice(i + 1));
     });
-    if (parts.plan && PLANS[parts.plan]) setPlan(parts.plan);
     if (parts.tab && TAB_ALIAS[parts.tab]) showTab(TAB_ALIAS[parts.tab]);
-    if (parts.place && PLACE_BY_ID[parts.place]) {
-      /* ถ้าลิงก์ชี้ไปที่พักของอีกแผน ให้สลับแผนให้อัตโนมัติ */
-      var tp = PLACE_BY_ID[parts.place];
-      if (tp.kind === "base" && tp.plan && tp.plan !== "both" && tp.plan !== activePlan) setPlan(tp.plan);
-      openDetail(parts.place);
-    }
+    if (parts.place && PLACE_BY_ID[parts.place]) openDetail(parts.place);
   }
   window.addEventListener("hashchange", applyHash);
-
-  /* -------------------------------------------------------- ปุ่มสลับแผน */
-  function renderPlanSwitch() {
-    var el = document.getElementById("planSwitch");
-    el.innerHTML = Object.keys(PLANS).map(function (k) {
-      var pl = PLANS[k], on = k === activePlan;
-      return '<button class="planbtn' + (on ? " on" : "") + '" data-plan="' + k + '" ' +
-             (on ? 'style="border-color:' + pl.color + ';color:' + pl.color + '"' : "") + ">" +
-             "<b>" + esc(pl.short) + "</b><span>" + esc(pl.sub) + "</span></button>";
-    }).join("");
-    el.querySelectorAll(".planbtn").forEach(function (b) {
-      b.addEventListener("click", function () { setPlan(b.getAttribute("data-plan")); });
-    });
-  }
-
-  function setPlan(k) {
-    if (!PLANS[k] || k === activePlan) return;
-    activePlan = k;
-    document.getElementById("detail").classList.remove("open");
-    selectedId = null;
-    renderPlanSwitch();
-    drawAllRoutes();
-    syncMarkers();
-    renderPlaces();
-    renderItinerary();
-    renderRegs();
-    if (legendEl) legendEl.innerHTML = legendHtml();
-    /* รีเฟรช popup ให้ตัวเลขตรงกับแผนใหม่ */
-    PLACES.forEach(function (p) { if (markers[p.id]) markers[p.id].setPopupContent(popupHtml(p)); });
-    var vis = PLACES.filter(function (p) { return inActivePlan(p) && !p.outsideRegion; })
-                    .map(function (p) { return p.ll; });
-    map.fitBounds(L.latLngBounds(vis).pad(0.08), { animate: false });
-  }
 
   /* -------------------------------------------------------------- mobile */
   function closeSidebarOnMobile() {
@@ -688,7 +631,6 @@
   });
 
   /* ---------------------------------------------------------------- init */
-  renderPlanSwitch();
   renderFilters();
   syncMarkers();
   renderPlaces();
@@ -696,7 +638,7 @@
   renderRegs();
 
   /* จัดกรอบแผนที่ให้เห็นทุกหมุดของแผนที่เลือกอยู่ */
-  var bounds = L.latLngBounds(PLACES.filter(function (p) { return inActivePlan(p) && !p.outsideRegion; })
+  var bounds = L.latLngBounds(PLACES.filter(function (p) { return !p.outsideRegion; })
                                    .map(function (p) { return p.ll; }));
   map.fitBounds(bounds.pad(0.08));
 

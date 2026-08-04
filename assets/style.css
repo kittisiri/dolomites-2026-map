@@ -92,24 +92,6 @@ header h1 span { color: var(--blue-600); font-weight: 500; }
 }
 #menuBtn:hover { background: var(--blue-100); }
 
-/* ---------- ปุ่มสลับแผน ---------- */
-#planSwitch { display: flex; gap: 8px; }
-.planbtn {
-  background: var(--stone-50); color: var(--blue-600);
-  border: 1px solid var(--border); border-radius: var(--radius);
-  padding: 6px 16px; font: inherit; cursor: pointer;
-  display: flex; flex-direction: column; align-items: flex-start; line-height: 1.3;
-  transition: background .12s, border-color .12s;
-}
-.planbtn:hover { background: var(--blue-100); border-color: var(--blue-300); }
-.planbtn b { font-size: 14px; font-weight: 700; }
-.planbtn span { font-size: 12px; line-height: 1.7; color: var(--txt-muted); white-space: nowrap; }
-.planbtn.on {
-  background: var(--blue-100); border-color: var(--blue-600); border-width: 2px;
-  padding: 5px 15px;
-}
-.planbtn.on b { color: var(--blue-800); }
-
 /* ---------- layout ---------- */
 #layout { display: flex; height: calc(100% - var(--header-h)); }
 
@@ -471,9 +453,6 @@ tfoot td {
   header h1 { font-size: 16px; }
   header h1 span { display: none; }
   .hdr-meta { display: none; }
-  .planbtn { padding: 4px 12px; }
-  .planbtn.on { padding: 3px 11px; }
-  .planbtn span { display: none; }
   #layout { position: relative; }
   #sidebar {
     position: absolute; inset: 0; z-index: 1050;

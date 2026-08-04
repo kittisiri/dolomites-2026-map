@@ -6,33 +6,6 @@
 
 const VERIFIED_ON = "3 สิงหาคม 2026";
 
-/* ---------------------------------------------------------------------------
-   สองแผนที่พัก — สลับดูได้จากปุ่มด้านบน
-   แผน A: ย้าย 2 ที่ในหุบเขา Val Gardena · แผน B: อยู่ที่เดียวที่ Feldthurns
-   --------------------------------------------------------------------------- */
-const PLANS = {
-  A: {
-    key: "A",
-    label: "แผน A — ย้าย 2 ฐาน (ใช้จริง)",
-    short: "แผน A ✅",
-    sub: "S. Cristina 2 คืน → Valdaora 2 คืน",
-    bases: ["margherita", "tyrolian"],   // เรียงตามลำดับวันที่เข้าพัก
-    primary: "margherita",
-    transit: "temblhof_to_margherita",
-    color: "#487E32",
-  },
-  B: {
-    key: "B",
-    label: "แผน B — Feldthurns (ยกเลิกแล้ว)",
-    short: "แผน B ✕",
-    sub: "Hofer Hof — ยกเลิกแล้ว เก็บไว้ดูเหตุผล",
-    bases: ["hoferhof"],
-    primary: "hoferhof",
-    transit: "temblhof_to_hoferhof",
-    color: "#3D678A",
-  },
-};
-const DEFAULT_PLAN = "A";
 
 /* สถานะการตรวจสอบของแต่ละข้อเท็จจริง */
 const V = {
@@ -155,8 +128,7 @@ const REGS = [
       { v: "unknown", t: "<b>เวลาบังคับใช้รายวัน</b> — ไม่มีแหล่งทางการระบุ อย่าเดาว่าเป็น 09:00–17:00" },
       { v: "unknown", t: "<b>เว็บจองและราคาต่อช่องจอด</b> — ยังไม่เปิด ณ ก.ค. 2026" },
       { v: "ok",      t: "ผู้ได้รับยกเว้น: ผู้อยู่อาศัย · คนทำงาน/ช่าง/ซัพพลายเออร์ · ขนส่งสาธารณะ · รถส่งของ · <b>แขกที่จองที่พักใน Val Gardena หรือ Alta Badia</b> (ที่พักออกใบอนุญาตดิจิทัลให้ ไม่มีช่องทางสมัครเอง)" },
-      { v: "ok",      t: "🟢 <b>แผน A (7–9 ก.ย. พักที่ Santa Cristina) = อยู่ใน Val Gardena → เข้าข่ายได้รับยกเว้น</b> ต้องขอใบอนุญาตดิจิทัลจากที่พัก · <b>แต่ 9–11 ก.ย. ย้ายไป Valdaora แล้วสิทธิหายไป</b> → ถ้าจะขึ้น Passo Gardena ให้ทำในช่วงสองคืนแรก" },
-      { v: "ok",      t: "🔴 <b>แผน B (Feldthurns) อยู่นอกทั้งสองหุบเขา → นับเป็นนักท่องเที่ยวไป-กลับตลอดทริป</b> ต้องมีที่จอดที่จองไว้ถึงจะขับขึ้นพาสได้" },
+      { v: "ok",      t: "🟢 <b>7–9 ก.ย. พักที่ Santa Cristina = อยู่ใน Val Gardena → เข้าข่ายได้รับยกเว้น</b> ต้องขอใบอนุญาตดิจิทัลจากที่พัก · <b>แต่ 9–11 ก.ย. ย้ายไป Valdaora แล้วสิทธิหายไป</b> → ถ้าจะขึ้น Passo Gardena ให้ทำในช่วงสองคืนแรก" },
       { v: "partial", t: "รายชื่อรหัสไปรษณีย์/เทศบาลที่เข้าข่ายยกเว้น <b>ยังไม่สรุป</b> ณ ก.ค. 2026" },
       { v: "unknown", t: "🚨 <b>ยังไม่ได้รับอนุมัติขั้นสุดท้าย</b> — Passo Gardena เป็นถนนของจังหวัด ต้องผ่าน Giunta Provinciale di Bolzano ก่อน · ประธานจังหวัดบอกว่ายังมีประเด็นทางเทคนิค/กฎหมายค้างอยู่ · <b>ณ ก.ค. 2026 ยังไม่มีประกาศและไม่มีระบบจอง</b>" },
     ],
@@ -367,7 +339,7 @@ const REGS = [
     summary: "วันที่ 12 ก.ย. 2026 สี่ช่องเขารอบ Sella ปิดรถยนต์ช่วงกลางวัน — เป็นวันถัดจากที่เราเช็กเอาต์ แต่ถ้าแผนเลื่อนต้องรู้",
     facts: [
       { v: "ok",      t: "<b>12 ก.ย. 2026</b> — Passo Gardena, Passo Sella, Passo Pordoi, Passo Campolongo <b>ปิดรถยนต์ราว 08:30/09:00–16:00</b>" },
-      { v: "ok",      t: "เราเช็กเอาต์ Hofer Hof วันที่ 11 ก.ย. → <b>ไม่กระทบ</b> แต่ถ้าแผนเลื่อนไปวันที่ 12 ห้ามใช้เส้น Pordoi/Sella" },
+      { v: "ok",      t: "เราออกจาก Valdaora กลับ Munich วันที่ 11 ก.ย. → <b>ไม่กระทบ</b> แต่ถ้าแผนเลื่อนไปวันที่ 12 ห้ามใช้เส้น Pordoi/Sella" },
       { v: "ok",      t: "Passo Falzarego, Valparola, Giau <b>ไม่ปิด</b> → เส้น Cortina → Falzarego → Val Badia ยังใช้ได้วันนั้น" },
       { v: "partial", t: "<b>Passo Sella ปิดวันพุธ (#DolomitesVives)</b> — เป็นโครงการนำร่องปี 2017–2019 <b>ไม่พบหลักฐานว่ากลับมาปี 2026</b> · หน้าทางการของช่องเขา Sella ไม่ระบุข้อจำกัดใด ๆ · แต่ <b>9 ก.ย. 2026 เป็นวันพุธ</b> — ควรเช็กอีกครั้งก่อนไป" },
     ],
@@ -407,7 +379,7 @@ const REGS = [
 const PLACES = [
   /* ---------- ที่พัก ---------- */
   {
-    id: "margherita", kind: "base", plan: "A", name: "Apartments Heritage House Margherita",
+    id: "margherita", kind: "base", name: "Apartments Heritage House Margherita",
     alt: "Santa Cristina Valgardena / St. Christina in Gröden",
     ll: [46.55799, 11.72324], routeKey: null,
     dates: "7–9 ก.ย. 2026 (2 คืน) — ✅ <b>จองแล้ว</b>",
@@ -432,18 +404,18 @@ const PLACES = [
     ],
   },
   {
-    id: "tyrolian", kind: "base", plan: "A", name: "Chalet Tyrolian Apartments", alt: "by Familiaris · Valdaora / Olang",
+    id: "tyrolian", kind: "base", name: "Chalet Tyrolian Apartments", alt: "by Familiaris · Valdaora / Olang",
     ll: [46.75763, 12.03882], routeKey: null,
     dates: "9–11 ก.ย. 2026 (2 คืน) — ⏳ <b>รอเอกสารจากแอน</b>",
     checkin: "⚠️ ยังไม่ทราบเวลาเช็กอิน/เช็กเอาต์ — รอเอกสารยืนยัน",
     address: "Hans-von-Perthaler-Straße 22, 39030 Valdaora di Sopra (Oberolang), Italy",
     phone: "+39 0474 495400",
     web: "https://www.familiaris.info",
-    blurb: "ฐานที่สองของแผน A — <b>อยู่ Val Pusteria ไม่ใช่ Val Gardena</b> แถบ Kronplatz/Plan de Corones ใกล้ Lago di Braies และ Tre Cime มีสปา/ซาวน่า สระว่ายน้ำห่าง 500 ม.",
+    blurb: "ฐานที่สอง — <b>อยู่ Val Pusteria ไม่ใช่ Val Gardena</b> แถบ Kronplatz/Plan de Corones ใกล้ Lago di Braies และ Tre Cime มีสปา/ซาวน่า สระว่ายน้ำห่าง 500 ม.",
     stats: null,
     notes: [
       "📍 <b>อยู่คนละฝั่งกับ Margherita</b> — Valdaora อยู่ในหุบเขา Pusteria ทางเหนือ-ตะวันออก ห่างจาก Santa Cristina 79 กม. / 77 นาที",
-      "🟢 <b>นี่คือจุดแข็งของแผน A</b> — ย้ายมาฝั่งนี้แล้ว <b>Lago di Braies เหลือ 20 นาที</b> (จาก Hofer Hof 66 นาที) และ <b>Tre Cime เหลือ 55 นาที</b> (จาก Hofer Hof 102 นาที)",
+      "🟢 <b>นี่คือจุดแข็งของการย้ายฐาน</b> — มาอยู่ฝั่งนี้แล้ว <b>Lago di Braies เหลือ 20 นาที</b> และ <b>Tre Cime เหลือ 55 นาที</b> (ถ้าอยู่ฝั่ง Val Gardena ตลอดจะเป็น 92 และ 102 นาที)",
       "🔴 <b>ไม่ได้อยู่ใน Val Gardena/Alta Badia → ช่วง 9–11 ก.ย. ไม่ได้สิทธิยกเว้น ZTL ของ Passo Gardena</b> ถ้าจะขึ้น Passo Gardena ให้ทำตอนพักที่ Margherita",
       "🎫 <b>มี Südtirol Guest Pass / Holidaypass Kronplatz</b> ให้แขก → ใช้รถบัสในจังหวัดฟรี",
       "🔴 <b>ยูนิตรับได้ 2–7 คนต่อห้อง</b> (39–50 ตร.ม.) มีทั้งหมด 5 ยูนิต → 8 คนต้องจอง <b>2 ยูนิต</b> ต้องเช็กว่าจองครบหรือยัง",
@@ -451,25 +423,7 @@ const PLACES = [
     ],
   },
   {
-    id: "hoferhof", kind: "base", plan: "B", name: "Hofer Hof", alt: "Feldthurns / Velturno",
-    ll: [46.66876, 11.60971], routeKey: null,
-    dates: "❌ <b>ยกเลิกแล้ว</b> (เดิม 7–11 ก.ย. 2026, 4 คืน)",
-    checkin: "เช็กอิน 14:30–20:00 · เช็กเอาต์ 06:00–10:00 (ช่วงเวลาตายตัวทั้งคู่)",
-    address: "Weinbergweg 10, 39040 Feldthurns (Velturno), Italy",
-    phone: "+39 320 067 8910",
-    blurb: "❌ <b>ยกเลิกแล้ว — ไม่ได้ใช้</b> · เก็บหน้านี้ไว้เป็นบันทึกว่าทำไมถึงเลือกแผน A · เดิมเป็นอพาร์ตเมนต์ 3 ห้องนอน นอนได้ 8 คนในที่เดียว มีครัว ซาวน่า บาร์บีคิว ที่จอดรถส่วนตัวฟรี",
-    stats: null,
-    notes: [
-      "Feldthurns อยู่ในหุบเขา Isarco แถว Klausen/Chiusa — เป็นประตูเข้า Val Gardena",
-      "🔴 อยู่<b>นอก</b> Val Gardena และ Alta Badia → <b>ไม่ได้สิทธิยกเว้น ZTL ของ Passo Gardena</b>",
-      "🟢 <b>ไม่ต้องย้ายที่พักกลางทริป</b> — เก็บของครั้งเดียว และนอนรวมกันทั้ง 8 คนในหลังเดียว",
-      "🟢 ใกล้ฝั่งเหนือ/ตะวันออกมากกว่าแผน A — <b>Lago di Braies เร็วกว่าแผน A ถึง 26 นาที</b> และ Val di Funes เร็วกว่า 24 นาที",
-      "อยู่ในเซาท์ทิโรล → น่าจะได้ <b>Südtirol Guest Pass</b> จากที่พัก ซึ่งใช้รถบัสสาย 330 ไป Zans ได้ฟรี",
-      "💰 €1,836.80 สำหรับ 8 คน 4 คืน (€229.60/คน) · ยกเลิกฟรีถึง <b>23 ส.ค. 2026 23:59</b>",
-    ],
-  },
-  {
-    id: "temblhof", kind: "base", plan: "both", name: "Temblhof", alt: "Vipiteno / Sterzing",
+    id: "temblhof", kind: "base", name: "Temblhof", alt: "Vipiteno / Sterzing",
     ll: [46.92130, 11.44494], routeKey: null,
     dates: "6 ก.ย. 2026 (1 คืน)",
     checkin: "เช็กอิน 15:00–19:00 · เช็กเอาต์ 09:00–10:00 (ช่วงเวลาตายตัวทั้งคู่)",
@@ -479,7 +433,7 @@ const PLACES = [
     stats: null,
     notes: [
       "📍 Vipiteno <b>ยังไม่ใช่ Dolomites</b> — อยู่ใต้ Brenner Pass ลงมานิดเดียว เป็นจุดพักไม่ใช่ฐานเที่ยว",
-      "จาก Temblhof ไป Hofer Hof ต่ออีกราว 1 ชม.",
+      "จาก Temblhof ไป Santa Cristina ต่ออีกราว 1 ชม. (67 กม.)",
       "เช็กเอาต์บังคับ 09:00–10:00 → วันที่ 7 ก.ย. ออกช้าไม่ได้",
     ],
   },
@@ -607,7 +561,8 @@ const PLACES = [
     regs: ["passo_gardena_ztl", "sellaronda_bikeday", "parking_lines"],
     notes: [
       "🔴 <b>ต้องเช็กสถานะก่อนไป</b> — แผน ZTL เริ่ม 1 ก.ย. 2026 แต่ ณ ก.ค. ยังไม่ผ่านการอนุมัติจากจังหวัดและไม่มีระบบจอง",
-      "เราพักที่ Feldthurns = นับเป็นนักท่องเที่ยวรายวัน ไม่ได้สิทธิยกเว้น",
+      "🟢 <b>7–9 ก.ย. เราพักที่ Santa Cristina ซึ่งอยู่ใน Val Gardena → เข้าข่ายได้สิทธิยกเว้นในฐานะแขกค้างคืน</b> (ขอใบอนุญาตดิจิทัลจากที่พัก — ถามไปแล้ว รอคำตอบ)",
+      "🔴 <b>ตั้งแต่ 9 ก.ย. ย้ายไป Valdaora แล้วสิทธิหายไป</b> → ถ้าจะขึ้นพาส ให้ทำในช่วงสองคืนแรก หรือระหว่างขับย้ายฐานวันที่ 9",
       "12 ก.ย. 2026 ปิดทั้งวันสำหรับ Sellaronda Bike Day",
     ],
   },
@@ -656,7 +611,7 @@ const PLACES = [
     notes: [
       "💰 <b>จอด P2 แทน P1 ประหยัดเกือบ €10 ต่อคัน</b> แลกกับเดินเพิ่ม 5 นาที — 2 คันประหยัดเกือบ €20",
       "🚫 ห้ามลงเล่นน้ำ ห้ามบินโดรน ห้ามออกนอกทางเดิน",
-      "📍 ไกลจากทั้งสองแผน — จาก S. Cristina 64 นาที · จาก Hofer Hof 52 นาที · จาก Valdaora 97 นาที เหมาะเฉพาะวันที่ตั้งใจขับเส้นทางใต้",
+      "📍 ไกลจากทั้งสองฐาน — จาก S. Cristina 64 นาที · จาก Valdaora 97 นาที เหมาะเฉพาะวันที่ตั้งใจขับเส้นทางใต้",
     ],
   },
   {
@@ -727,7 +682,7 @@ const PLACES = [
     blurb: "หมู่บ้านยุคกลางริมแม่น้ำ Isarco ใต้อาราม Säben ติดอันดับหมู่บ้านสวยที่สุดของอิตาลี — อยู่ห่างฐานแค่ 10 นาที",
     stats: { dist: "—", gain: "—", diff: "เดินเล่นในเมือง", dur: "1.5–3 ชม.", best: "เย็น" },
     regs: ["parking_lines"],
-    notes: ["ใกล้ Hofer Hof มาก เหมาะกับเย็นวันที่กลับจากเขาเร็ว หรือหาร้านอาหารเย็น"],
+    notes: ["อยู่ระหว่างทางลงจาก Val Gardena — แวะได้เย็นวันที่กลับจากเขาเร็ว หรือหาร้านอาหารเย็น"],
   },
 ];
 
@@ -735,14 +690,13 @@ const PLACES = [
    ฐานที่พักทางเลือก — ใช้เทียบเวลาขับรถ
    --------------------------------------------------------------------------- */
 const BASES = [
-  { key: "margherita", label: "Margherita", town: "S. Cristina", sub: "แผน A · 7–9 ก.ย.",  plan: "A", ll: [46.55799, 11.72324] },
-  { key: "tyrolian",   label: "Chalet Tyrolian", town: "Valdaora", sub: "แผน A · 9–11 ก.ย.", plan: "A", ll: [46.75763, 12.03882] },
-  { key: "hoferhof",   label: "Hofer Hof", town: "Feldthurns", sub: "แผน B · 7–11 ก.ย.",  plan: "B", ll: [46.66876, 11.60971], booked: true },
+  { key: "margherita", label: "Margherita", town: "S. Cristina", sub: "7–9 ก.ย.",  ll: [46.55799, 11.72324] },
+  { key: "tyrolian",   label: "Chalet Tyrolian", town: "Valdaora", sub: "9–11 ก.ย.", ll: [46.75763, 12.03882] },
 ];
 
 
 /* ---------------------------------------------------------------------------
-   แผนเที่ยวร่างของแผน A
+   แผนเที่ยวร่าง
    --------------------------------------------------------------------------- */
 const ITINERARY = [
   {
@@ -904,26 +858,26 @@ const BOOKINGS = [
   },
 ];
 
-const PLAN_A_PROS = [
-  "<b>ขับน้อยกว่าแผน B รวม 191 นาที</b> — ย้ายฐานทำให้ไม่ต้องขับสวนหุบเขาไป-กลับทุกวัน",
+const PLAN_PROS = [
+  "<b>ขับน้อยกว่าการอยู่ฐานเดียวรวม 191 นาที</b> — ย้ายฐานทำให้ไม่ต้องขับสวนหุบเขาไป-กลับทุกวัน (เทียบกับแผนเดิมที่จะอยู่ Feldthurns ที่เดียว 4 คืน ซึ่งยกเลิกไปแล้ว)",
   "<b>สองคืนแรกอยู่ติดของดีฝั่งตะวันตก</b> — Seceda 8 นาที · Col Raiser 2 นาที · Alpe di Siusi 24 นาที",
-  "<b>สองคืนหลังอยู่ติดของดีฝั่งเหนือ</b> — Lago di Braies 20 นาที (แผน B ต้อง 66) · Tre Cime 55 นาที (แผน B ต้อง 102)",
-  "<b>ได้สิทธิยกเว้น ZTL Passo Gardena</b> ตอนพักที่ Santa Cristina — แผน B ไม่ได้เลยทั้งทริป",
+  "<b>สองคืนหลังอยู่ติดของดีฝั่งเหนือ</b> — Lago di Braies 20 นาที · Tre Cime 55 นาที (ถ้าอยู่ Feldthurns ที่เดียวต้องใช้ 66 และ 102 นาที)",
+  "<b>ได้สิทธิยกเว้น ZTL Passo Gardena</b> ตอนพักที่ Santa Cristina — ที่พักนอก Val Gardena ไม่ได้สิทธินี้",
   "<b>ประหยัดค่ากระเช้า Seceda €320</b> เพราะ Col Raiser อยู่ข้างที่พัก",
   "<b>วันสุดท้ายออกตัวใกล้ Braies</b> — แวะได้ก่อนขับกลับ Munich โดยไม่ต้องอ้อม",
 ];
 
-const PLAN_A_CONS = [
+const PLAN_CONS = [
   "<b>ต้องเก็บของย้ายกลางทริป</b> — 79 กม. / 77 นาที กินเวลาบ่ายวันที่ 9 ก.ย. ไปทั้งบ่าย",
-  "<b>ต้องจอง 2 ยูนิตในแต่ละที่</b> — ไม่มียูนิตไหนรับ 8 คนได้ในหลังเดียว ต่างจาก Hofer Hof",
+  "<b>Chalet Tyrolian ต้องจอง 2 ยูนิต</b> — ยูนิตที่นั่นรับได้สูงสุด 7 คน (Margherita ห้อง Artejan รับ 8 คนได้ในหลังเดียว)",
   "<b>เช็กเอาต์ Margherita ก่อน 10:00 วันที่ 9</b> — บีบให้ต้องเก็บของก่อนออกไปเที่ยวเช้าวันนั้น",
   "<b>ยังไม่รู้เวลาและเอกสารของ Chalet Tyrolian</b> — รอจากแอน",
-  "<b>นอนแยกกัน 8 คน</b> — ไม่ได้อยู่บ้านเดียวกันแบบ Hofer Hof ที่มีครัว ซาวน่า บาร์บีคิวรวม",
-  "<b>Val di Funes ไกลขึ้น</b> — 43 นาทีจาก S. Cristina เทียบกับ 19 นาทีจาก Hofer Hof",
+  "<b>ช่วงที่สองนอนแยก 2 ยูนิต</b> — ไม่ได้อยู่รวมกันทั้ง 8 คนในหลังเดียวเหมือนช่วงแรก",
+  "<b>Val di Funes อยู่ไกลจากทั้งสองฐาน</b> — 43 นาทีจาก S. Cristina · 69 นาทีจาก Valdaora จึงต้องเก็บให้จบตั้งแต่วันที่ 7",
   "<b>ราคายังไม่ครบ</b> — Margherita €1,079.80 (2 คืน) ยืนยันแล้ว แต่ยังไม่รู้ราคา Chalet Tyrolian",
 ];
 
-const PLAN_A_SUGGESTIONS = [
+const PLAN_SUGGESTIONS = [
   { t: "ตัด Lago di Carezza ออก แล้วใส่ Alpe di Siusi แทนในบ่ายวันที่ 8",
     d: "Carezza กินเวลาขับ 2 ชม. 8 นาทีเพื่อทะเลสาบ 30 นาที ส่วน Alpe di Siusi อยู่ห่างแค่ 24 นาที · <b>ยิ่งจำเป็นขึ้นเมื่อรู้ว่าเช็กเอาต์ 9 ก.ย. คือก่อน 10:00</b> — ย้าย Alpe di Siusi มาวันที่ 8 แล้ววันที่ 9 เหลือแค่เก็บของกับขับเส้นสวยไป Valdaora สบาย ๆ", sev: "high" },
   { t: "วันที่ 9 ให้ย้ายฐานโดยขับผ่าน Passo Gardena → Corvara → Val Badia",

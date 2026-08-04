@@ -5,7 +5,8 @@ import json, time, urllib.request
 OSRM = "https://router.project-osrm.org/route/v1/driving/"
 
 BASES = {
-    "hoferhof": (46.66876, 11.60971),   # Hofer Hof, Weinbergweg 10, Feldthurns
+    "margherita": (46.55799, 11.72324),  # Heritage House Margherita, S. Cristina  (7-9 Sep)
+    "tyrolian":   (46.75763, 12.03882),  # Chalet Tyrolian, Valdaora / Olang        (9-11 Sep)
 }
 
 # id -> drive-to point (car park / valley station), NOT necessarily the pin
@@ -48,9 +49,9 @@ def route(a, b, overview="simplified"):
         time.sleep(3)
     return None
 
-out = {"from_hoferhof": {}, "transit": {}}
+out = {"from_base": {}, "transit": {}}
 
-print("== routes from Hofer Hof (with geometry) ==")
+print("== routes from each base (with geometry) ==")
 for k, d in DESTS.items():
     r = route(BASES["hoferhof"], d)
     if r:
