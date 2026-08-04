@@ -543,7 +543,7 @@
       });
 
     /* ---- ข้อเสนอ ---- */
-    h += '<h3 class="sec">ข้อเสนอของผม</h3>';
+    h += '<h3 class="sec">ข้อเสนอจาก AI</h3>';
     h += '<p style="font-size:12.5px;color:var(--txt-muted);margin-top:-4px">เรียงจากที่ควรทำก่อน</p>';
     var order = { high: 0, med: 1 };
     PLAN_SUGGESTIONS.slice().sort(function (a, b) { return order[a.sev] - order[b.sev]; })
