@@ -11,20 +11,11 @@
   var BASE_BY_KEY = {};
   BASES.forEach(function (b) { BASE_BY_KEY[b.key] = b; });
 
-  /* ที่พักสองที่ เรียงตามลำดับวันเข้าพัก */
-  var BASE_KEYS = BASES.map(function (b) { return b.key; });
-
-  /* เวลาขับจากที่พักไปจุดหนึ่ง — คืนค่าที่ดีที่สุดและรายละเอียดรายที่พัก */
-  function driveFromBases(routeKey) {
-    if (!routeKey) return null;
-    var per = BASE_KEYS.map(function (bk) {
-      var r = ROUTES.from_base[bk] && ROUTES.from_base[bk][routeKey];
-      return r ? { base: bk, km: r.km, min: r.min } : null;
-    }).filter(Boolean);
-    if (!per.length) return null;
-    var best = per.reduce(function (a, b) { return b.min < a.min ? b : a; });
-    var worst = per.reduce(function (a, b) { return b.min > a.min ? b : a; });
-    return { per: per, best: best, worst: worst, multi: per.length > 1 };
+  /* แต่ละที่เที่ยวผูกกับที่พักเดียว ตามวันที่จะไปจริง — ไม่วาดเส้นทางที่ไม่ได้ใช้ */
+  function driveForPlace(p) {
+    if (!p || !p.routeKey || !p.base) return null;
+    var r = ROUTES.from_base[p.base] && ROUTES.from_base[p.base][p.routeKey];
+    return r ? { base: p.base, km: r.km, min: r.min } : null;
   }
 
   /* ------------------------------------------------------------------ map */
@@ -91,10 +82,10 @@
     var h = "<b>" + esc(p.name) + "</b>";
     if (p.alt) h += '<br><span style="color:var(--txt-muted);font-size:12px">' + esc(p.alt) + "</span>";
     h += '<div style="margin-top:6px;font-size:12px;color:var(--txt-muted)">' + meta.icon + " " + meta.label;
-    var dr = driveFromBases(p.routeKey);
+    var dr = driveForPlace(p);
     if (dr) {
-      h += " · ใกล้สุด <b style='color:var(--stone-900)'>" + dr.best.min + " นาที</b>" +
-           (dr.multi ? " (จาก " + esc(BASE_BY_KEY[dr.best.base].town) + ")" : "");
+      h += " · <b style='color:var(--stone-900)'>" + dr.min + " นาที</b> จาก " +
+           esc(BASE_BY_KEY[dr.base].town);
     }
     h += "</div>";
     if (sev === "high") {
@@ -130,17 +121,15 @@
   function drawAllRoutes() {
     routeLayer.clearLayers();
     allRouteLines = [];
-    BASE_KEYS.forEach(function (bk) {
-      var set = ROUTES.from_base[bk] || {};
-      Object.keys(set).forEach(function (key) {
-        var r = set[key];
-        if (!r || !r.coords || !r.coords.length) return;
-        var line = L.polyline(r.coords, {
-          color: BASE_COLOR[bk] || "#3D678A", weight: 2.5, opacity: 0.38
-        }).addTo(routeLayer);
-        line.bindTooltip(routeLabel(bk, key, r), { sticky: true });
-        allRouteLines.push({ key: key, base: bk, line: line });
-      });
+    PLACES.forEach(function (p) {
+      if (!p.routeKey || !p.base) return;
+      var r = ROUTES.from_base[p.base] && ROUTES.from_base[p.base][p.routeKey];
+      if (!r || !r.coords || !r.coords.length) return;
+      var line = L.polyline(r.coords, {
+        color: BASE_COLOR[p.base] || "#3D678A", weight: 2.5, opacity: 0.38
+      }).addTo(routeLayer);
+      line.bindTooltip(routeLabel(p.base, p.routeKey, r), { sticky: true });
+      allRouteLines.push({ key: p.routeKey, base: p.base, line: line });
     });
     /* ขาเข้าทริปจาก Temblhof + ขาย้ายที่พักกลางทริป 9 ก.ย. */
     var t = ROUTES.transit && ROUTES.transit.temblhof_to_margherita;
@@ -245,7 +234,7 @@
 
   function placeCard(p) {
     var meta = KIND_META[p.kind];
-    var dr = driveFromBases(p.routeKey);
+    var dr = driveForPlace(p);
     var h = '<div class="card' + (selectedId === p.id ? " sel" : "") + '" data-id="' + p.id + '">';
     h += '<div class="card-top"><span style="color:' + meta.color + '">' + meta.icon + "</span>" +
          '<span class="card-name">' + esc(p.name) + "</span>";
@@ -256,12 +245,8 @@
     if (p.kind === "base") {
       h += "<span>" + p.dates + "</span>";
     } else if (dr) {
-      if (dr.multi && dr.worst.min - dr.best.min > 5) {
-        h += "<span>🚗 <b>" + dr.best.min + " นาที</b> จาก " + esc(BASE_BY_KEY[dr.best.base].town) +
-             ' <span style="opacity:.65">· ' + dr.worst.min + " นาที จาก " + esc(BASE_BY_KEY[dr.worst.base].town) + "</span></span>";
-      } else {
-        h += "<span>🚗 <b>" + dr.best.km + " กม.</b> / <b>" + dr.best.min + " นาที</b> จากที่พัก</span>";
-      }
+      h += "<span>🚗 <b>" + dr.km + " กม.</b> / <b>" + dr.min + " นาที</b> จาก " +
+           esc(BASE_BY_KEY[dr.base].town) + "</span>";
     }
     if (p.stats && p.stats.dur) h += "<span>⏱ " + esc(p.stats.dur) + "</span>";
     if (p.stats && p.stats.diff) h += "<span>📈 " + esc(p.stats.diff) + "</span>";
@@ -341,7 +326,7 @@
     renderPlaces();
 
     var meta = KIND_META[p.kind];
-    var dr = driveFromBases(p.routeKey);
+    var dr = driveForPlace(p);
     var h = "";
 
     h += "<h2>" + esc(p.name) + "</h2>";
@@ -365,23 +350,10 @@
       h += "</dl>";
     }
 
-    /* --- เวลาขับจากแต่ละที่พักของแผนนี้ --- */
-    if (dr && dr.multi) {
-      h += "<h3>ขับจากที่พักไหนใกล้กว่า</h3><dl class=statgrid>";
-      dr.per.forEach(function (x) {
-        var isBest = x.base === dr.best.base;
-        h += "<dt>" + esc(BASE_BY_KEY[x.base].town) + "</dt><dd" +
-             (isBest ? ' style="color:var(--green-700)"' : ' style="opacity:.7"') + ">" +
-             x.km + " กม. · " + x.min + " นาที" + (isBest ? "  ← ใกล้กว่า" : "") + "</dd>";
-      });
-      h += "</dl>";
-      h += '<p style="font-size:12.5px;color:var(--txt-muted);margin-top:8px">จัดวันให้ตรงกับที่พักที่ใกล้กว่า จะประหยัดเวลาขับได้มาก</p>';
-    }
-
     /* --- สถิติเส้นทางเดิน --- */
     if (p.stats) {
       h += "<h3>ข้อมูลเส้นทาง</h3><dl class=statgrid>";
-      if (dr && !dr.multi) h += "<dt>ขับจากที่พัก</dt><dd>" + dr.best.km + " กม. · " + dr.best.min + " นาที</dd>";
+      if (dr) h += "<dt>ขับจากที่พัก</dt><dd>" + esc(BASE_BY_KEY[dr.base].town) + " · " + dr.km + " กม. · " + dr.min + " นาที</dd>";
       if (p.stats.dist) h += "<dt>ระยะทางเดิน</dt><dd>" + esc(p.stats.dist) + "</dd>";
       if (p.stats.gain) h += "<dt>ความสูงที่ไต่</dt><dd>" + esc(p.stats.gain) + "</dd>";
       if (p.stats.diff) h += "<dt>ความยาก</dt><dd>" + esc(p.stats.diff) + "</dd>";
@@ -512,11 +484,11 @@
           var p = PLACE_BY_ID[id];
           if (!p) return;
           var meta = KIND_META[p.kind];
-          var dr = driveFromBases(p.routeKey);
+          var dr = driveForPlace(p);
           h += '<button class="stop" data-id="' + id + '">' +
                '<span style="color:' + meta.color + '">' + meta.icon + "</span> " +
                esc(p.name) +
-               (dr ? ' <b style="color:var(--blue-700)">' + dr.best.min + " น.</b>" : "") +
+               (dr ? ' <b style="color:var(--blue-700)">' + dr.min + " น.</b>" : "") +
                (needsBooking(p) ? ' <span style="color:var(--rose-700);font-weight:900">!</span>' : "") +
                "</button>";
         });

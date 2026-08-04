@@ -445,7 +445,7 @@ const PLACES = [
   /* ---------- ที่เที่ยวและเส้นทางเดิน ---------- */
   {
     id: "tre_cime", kind: "hike", name: "Tre Cime di Lavaredo", alt: "Drei Zinnen",
-    ll: [46.61830, 12.30500], driveTo: [46.61220, 12.29610], routeKey: "tre_cime",
+    ll: [46.61830, 12.30500], driveTo: [46.61220, 12.29610], routeKey: "tre_cime", base: "tyrolian",
     driveLabel: "Rifugio Auronzo (2,333 ม.) — ผ่านถนนเก็บค่าผ่านทาง",
     blurb: "สามยอดหินปูนตั้งเดี่ยว สัญลักษณ์ของ Dolomites ฝั่งตะวันออก สูงถึง 2,999 ม. เดินวนรอบได้สบายเพราะเริ่มที่ความสูง 2,333 ม. อยู่แล้ว",
     stats: { dist: "10 กม. (วนรอบ)", gain: "~350–400 ม.", diff: "ง่าย–ปานกลาง", dur: "3–4 ชม.", best: "เช้าตรู่ — รอบ 07:00 ถ้าจองได้" },
@@ -458,7 +458,7 @@ const PLACES = [
   },
   {
     id: "sorapis", kind: "hike", name: "Lago di Sorapis", alt: "Sorapissee",
-    ll: [46.52056, 12.22350], driveTo: [46.55703, 12.20185], routeKey: "sorapis",
+    ll: [46.52056, 12.22350], driveTo: [46.55703, 12.20185], routeKey: "sorapis", base: "tyrolian",
     driveLabel: "Passo Tre Croci (1,805 ม.) — ที่จอดฟรี ริมถนน SR48",
     blurb: "ทะเลสาบธารน้ำแข็งสีฟ้าขุ่นเหมือนน้ำนม เกิดจากผงหินปูนละเอียดที่แขวนลอยอยู่ในน้ำ ทะเลสาบและ Rifugio Vandelli อยู่ที่ 1,926 ม. จุดเริ่มเดิน 1,805 ม.",
     stats: { dist: "~10.5 กม. ไป-กลับ (5.2 กม. เที่ยวเดียว)", gain: "+434 ม. (อุทยานนับแบบสะสม 650 ม.)", diff: "EE — “sentiero per esperti” มีบันไดเหล็กและสลิงช่วงสั้น", dur: "เดิน ~4 ชม. · เผื่อทั้งวัน 5 ชม.", best: "ถึงจุดเริ่ม 07:30 — สีน้ำสวยสุด 07:30–09:30" },
@@ -473,7 +473,7 @@ const PLACES = [
   },
   {
     id: "cinque_torri", kind: "hike", name: "Cinque Torri", alt: "Nuvolau · พิพิธภัณฑ์สงครามกลางแจ้ง",
-    ll: [46.51590, 12.04640], driveTo: [46.51868, 12.03873], routeKey: "cinque_torri",
+    ll: [46.51590, 12.04640], driveTo: [46.51868, 12.03873], routeKey: "cinque_torri", base: "margherita",
     driveLabel: "Bai de Dones (1,889 ม.) — ที่จอดฟรี ไม่ต้องจอง",
     blurb: "ที่ราบสูงเข้าถึงง่าย มีหอหิน 5 แท่ง กับสนามเพลาะสงครามโลกครั้งที่ 1 ที่บูรณะไว้ทั้งระบบ เดินชมเองได้ฟรี · Bai de Dones 1,889 ม. → Rifugio Scoiattoli 2,255 ม.",
     stats: { dist: "วนรอบ “Giro dei tre rifugi” จาก Bai de Dones", gain: "ความสูงสะสมรวมแค่ ~67 ม. (ถ้าขึ้นกระเช้า)", diff: "ง่ายมาก — เหมาะกับเด็กและกลุ่มใหญ่", dur: "~2 ชม. ไม่รวมพัก · เผื่อชมพิพิธภัณฑ์ 1–3 ชม.", best: "เช้า — เลี่ยงพายุฝนฟ้าคะนองช่วงบ่าย" },
@@ -487,7 +487,7 @@ const PLACES = [
   },
   {
     id: "seceda", kind: "hike", name: "Seceda", alt: "สันเขา Odle / Geisler",
-    ll: [46.60059, 11.72578], driveTo: [46.57642, 11.67507], routeKey: "seceda",
+    ll: [46.60059, 11.72578], driveTo: [46.57642, 11.67507], routeKey: "seceda", base: "margherita",
     driveLabel: "Ortisei — สถานีกระเช้า Seceda (ที่จอดเพดาน €30/วัน)",
     blurb: "สันเขาที่ทุ่งหญ้าเอียงลาดจบลงด้วยหน้าผาตัดดิ่งลงไปในหมู่ยอด Odle — โปรไฟล์ภูเขาที่ถูกถ่ายมากที่สุดแห่งหนึ่งในยุโรป ยอด Seceda สูง 2,519 ม.",
     stats: { dist: "9.7 กม. (ทาง Col Raiser)", gain: "~484 ม.", diff: "ปานกลาง", dur: "3–4 ชม.", best: "บ่าย–เย็น — สันเขาหันทิศตะวันตก แสงเย็นสวยที่สุด" },
@@ -501,7 +501,7 @@ const PLACES = [
   },
   {
     id: "adolf_munkel", kind: "hike", name: "Adolf Munkel Trail", alt: "Val di Funes / Villnöss",
-    ll: [46.62099, 11.74950], driveTo: [46.63470, 11.76558], routeKey: "adolf_munkel",
+    ll: [46.62099, 11.74950], driveTo: [46.63470, 11.76558], routeKey: "adolf_munkel", base: "margherita",
     driveLabel: "Zanser Alm / Malga Zannes — ที่จอด €10 (จองล่วงหน้า €12)",
     blurb: "เส้นทางเลียบใต้หน้าผาเหนือของหมู่ยอด Odle/Geisler ลัดเลาะป่าสนสตันไพน์และป่าสปรูซ จุดหมายคือ Geisler Alm (Rifugio delle Odle)",
     stats: { dist: "9.5 กม.", gain: "~460 ม.", diff: "ปานกลาง", dur: "3–3.5 ชม.", best: "ออกเดิน 08:30" },
@@ -515,7 +515,7 @@ const PLACES = [
   },
   {
     id: "braies", kind: "lake", name: "Lago di Braies", alt: "Pragser Wildsee",
-    ll: [46.69472, 12.08584], driveTo: [46.69472, 12.08584], routeKey: "braies",
+    ll: [46.69472, 12.08584], driveTo: [46.69472, 12.08584], routeKey: "braies", base: "tyrolian",
     driveLabel: "Lago di Braies — ต้องมีบัตรจองถ้าเข้าช่วง 09:00–16:00",
     blurb: "ทะเลสาบสีเขียวมรกตในอุทยาน Fanes-Sennes-Braies พร้อมบ้านเรือพายไม้ที่เป็นภาพจำของ Dolomites เดินวนรอบทะเลสาบได้สบาย ๆ",
     stats: { dist: "~3.5 กม. (วนรอบทะเลสาบ)", gain: "~100 ม.", diff: "ง่าย", dur: "1–1.5 ชม.", best: "ก่อน 09:00 (ขับเข้าฟรี + น้ำนิ่งเป็นกระจก) หรือหลัง 16:00" },
@@ -530,7 +530,7 @@ const PLACES = [
   },
   {
     id: "alpe_di_siusi", kind: "view", name: "Alpe di Siusi", alt: "Seiser Alm",
-    ll: [46.54202, 11.61703], driveTo: [46.53988, 11.56326], routeKey: "alpe_di_siusi",
+    ll: [46.54202, 11.61703], driveTo: [46.53988, 11.56326], routeKey: "alpe_di_siusi", base: "margherita",
     driveLabel: "สถานีกระเช้า Siusi/Seis (แนะนำ) หรือลานจอด P1/P2 ที่ต้องจองล่วงหน้า",
     blurb: "ทุ่งหญ้าบนที่สูงที่ใหญ่ที่สุดในยุโรป ราว 56 ตร.กม. ที่ระดับ 1,700–2,300 ม. มีฉากหลังเป็น Sciliar และ Sassolungo",
     stats: { dist: "เลือกได้ 3–15 กม.", gain: "น้อย — ทางเรียบเป็นหลัก", diff: "ง่าย", dur: "ครึ่งวัน–เต็มวัน", best: "เช้า — แสงนุ่มและเมฆน้อย" },
@@ -544,7 +544,7 @@ const PLACES = [
   },
   {
     id: "val_di_funes", kind: "view", name: "Val di Funes — Santa Maddalena", alt: "Villnöss / St. Magdalena",
-    ll: [46.64472, 11.71932], driveTo: [46.64472, 11.71932], routeKey: "val_di_funes",
+    ll: [46.64472, 11.71932], driveTo: [46.64472, 11.71932], routeKey: "val_di_funes", base: "margherita",
     driveLabel: "หมู่บ้าน Santa Maddalena — จอดในหมู่บ้านแล้วเดินขึ้นจุดชมวิว",
     blurb: "โบสถ์เล็กกลางทุ่งหญ้ากับฉากหลังหมู่ยอด Odle — ภาพคลาสสิกที่สุดของเซาท์ทิโรล มีจุดชมวิวสองจุดคือโบสถ์ St. Johann in Ranui และวิวโบสถ์ Santa Maddalena",
     stats: { dist: "เดิน 1–3 กม.", gain: "น้อย", diff: "ง่ายมาก", dur: "1–2 ชม.", best: "เช้าตรู่หรือเย็น" },
@@ -558,7 +558,7 @@ const PLACES = [
   },
   {
     id: "passo_gardena", kind: "pass", name: "Passo Gardena", alt: "Grödner Joch (2,121 ม.)",
-    ll: [46.54982, 11.80839], driveTo: [46.54982, 11.80839], routeKey: "passo_gardena",
+    ll: [46.54982, 11.80839], driveTo: [46.54982, 11.80839], routeKey: "passo_gardena", base: "margherita",
     driveLabel: "ยอดช่องเขา — ⚠️ สถานะ ZTL ปี 2026 ยังไม่ชัด",
     blurb: "ช่องเขาเชื่อม Val Gardena กับ Val Badia วิวหมู่ Sella ตรงหน้า เป็นหนึ่งในสี่ช่องเขาของวง Sellaronda",
     stats: { dist: "—", gain: "—", diff: "ขับรถ", dur: "แวะ 30–60 นาที", best: "เช้าหรือเย็น" },
@@ -572,7 +572,7 @@ const PLACES = [
   },
   {
     id: "passo_sella", kind: "pass", name: "Passo Sella", alt: "Sellajoch (2,244 ม.)",
-    ll: [46.50892, 11.75731], driveTo: [46.50892, 11.75731], routeKey: "passo_sella",
+    ll: [46.50892, 11.75731], driveTo: [46.50892, 11.75731], routeKey: "passo_sella", base: "margherita",
     driveLabel: "ยอดช่องเขา — ที่จอดริมทาง",
     blurb: "ช่องเขาระหว่างหมู่ Sella กับ Sassolungo วิวเปิดโล่งทั้งสองฝั่ง เป็นจุดแวะถ่ายรูปคลาสสิกระหว่างขับ Sellaronda",
     stats: { dist: "—", gain: "—", diff: "ขับรถ", dur: "แวะ 30 นาที", best: "เช้า" },
@@ -584,7 +584,7 @@ const PLACES = [
   },
   {
     id: "passo_pordoi", kind: "pass", name: "Passo Pordoi", alt: "Pordoijoch (2,239 ม.)",
-    ll: [46.48755, 11.81219], driveTo: [46.48755, 11.81219], routeKey: "passo_pordoi",
+    ll: [46.48755, 11.81219], driveTo: [46.48755, 11.81219], routeKey: "passo_pordoi", base: "margherita",
     driveLabel: "ยอดช่องเขา — สถานีกระเช้า Sass Pordoi",
     blurb: "ช่องเขาสูงที่สุดในวง Sellaronda มีกระเช้าขึ้น Sass Pordoi (2,950 ม.) ที่เรียกกันว่า “ระเบียงของ Dolomites”",
     stats: { dist: "—", gain: "—", diff: "ขับรถ (+กระเช้า)", dur: "แวะ 1–2 ชม.", best: "เช้า — อากาศใสกว่า" },
@@ -593,7 +593,7 @@ const PLACES = [
   },
   {
     id: "falzarego", kind: "pass", name: "Passo Falzarego", alt: "Lagazuoi (2,105 ม.)",
-    ll: [46.51875, 12.00843], driveTo: [46.51875, 12.00843], routeKey: "falzarego",
+    ll: [46.51875, 12.00843], driveTo: [46.51875, 12.00843], routeKey: "falzarego", base: "margherita",
     driveLabel: "สถานีกระเช้า Lagazuoi — ที่จอดฟรีตลอดฤดูร้อน 2026",
     blurb: "ช่องเขาบนเส้น SR48 พร้อมกระเช้าขึ้น Rifugio Lagazuoi (2,752 ม.) วิว 360 องศา และอุโมงค์สงครามโลกครั้งที่ 1 ที่เดินเข้าไปได้",
     stats: { dist: "—", gain: "—", diff: "ขับรถ (+กระเช้า)", dur: "แวะ 1.5–2.5 ชม.", best: "เช้า" },
@@ -606,7 +606,7 @@ const PLACES = [
   },
   {
     id: "carezza", kind: "lake", name: "Lago di Carezza", alt: "Karersee",
-    ll: [46.40931, 11.57587], driveTo: [46.40931, 11.57587], routeKey: "carezza",
+    ll: [46.40931, 11.57587], driveTo: [46.40931, 11.57587], routeKey: "carezza", base: "margherita",
     driveLabel: "P1 ติดทะเลสาบ (แพงสุด) หรือ P2 Schönblickweg เดิน 5 นาที (ถูกกว่ามาก)",
     blurb: "ทะเลสาบเล็กสีมรกตสะท้อนเงาหมู่ยอด Latemar — ที่คนเรียกว่า “ทะเลสาบสายรุ้ง” เดินรอบได้สบาย ๆ มีสะพานแขวนเชื่อมจากลานจอด P2",
     stats: { dist: "~1.5 กม. รอบทะเลสาบ", gain: "แทบไม่มี", diff: "ง่ายมาก — มีทางไร้สิ่งกีดขวาง", dur: "30–45 นาที", best: "เช้า — น้ำนิ่งและสะท้อนเงาชัด" },
@@ -620,7 +620,7 @@ const PLACES = [
   },
   {
     id: "misurina", kind: "lake", name: "Lago di Misurina", alt: "Misurinasee",
-    ll: [46.58220, 12.25376], driveTo: [46.58220, 12.25376], routeKey: "misurina",
+    ll: [46.58220, 12.25376], driveTo: [46.58220, 12.25376], routeKey: "misurina", base: "tyrolian",
     driveLabel: "ริมทะเลสาบ SR48bis — อยู่ก่อนถึงด่านเก็บเงิน Tre Cime",
     blurb: "ทะเลสาบใหญ่ที่สุดใน Cadore สะท้อนเงายอด Sorapis กับ Cadini di Misurina อยู่ระหว่างทางขึ้น Tre Cime พอดี — แวะได้ตอนขึ้นหรือลง",
     stats: { dist: "~2.5 กม. รอบทะเลสาบ", gain: "แทบไม่มี", diff: "ง่ายมาก", dur: "40–60 นาที", best: "เช้าตรู่ หรือช่วงเย็นตอนลงจาก Tre Cime" },
@@ -632,7 +632,7 @@ const PLACES = [
   },
   {
     id: "cortina_town", kind: "town", name: "Cortina d'Ampezzo", alt: "เมืองหลักฝั่งตะวันออก",
-    ll: [46.53994, 12.13486], driveTo: [46.53994, 12.13486], routeKey: "cortina_town",
+    ll: [46.53994, 12.13486], driveTo: [46.53994, 12.13486], routeKey: "cortina_town", base: "tyrolian",
     driveLabel: "ลานจอดในเมือง — เสียเงิน 09:00–20:00 ราว €2/ชม.",
     blurb: "เมืองสกีชื่อดัง เจ้าภาพโอลิมปิกฤดูหนาว 2026 มีถนนคนเดิน Corso Italia ร้านอาหารและร้านกาแฟ — จุดพักกลางวันที่ดีของวันเที่ยวฝั่งตะวันออก",
     stats: { dist: "—", gain: "—", diff: "เดินเล่นในเมือง", dur: "1.5–2.5 ชม.", best: "กลางวัน — พักกินข้าวระหว่างวัน" },
@@ -644,7 +644,7 @@ const PLACES = [
   },
   {
     id: "passo_giau", kind: "pass", name: "Passo Giau", alt: "Passo di Giau (2,236 ม.)",
-    ll: [46.48282, 12.05349], driveTo: [46.48282, 12.05349], routeKey: "passo_giau",
+    ll: [46.48282, 12.05349], driveTo: [46.48282, 12.05349], routeKey: "passo_giau", base: "tyrolian",
     driveLabel: "ยอดช่องเขา SP638 — ที่จอดริมทาง",
     blurb: "ช่องเขาที่หลายคนยกให้สวยที่สุดใน Dolomites — วิว Ra Gusela และ Nuvolau ตั้งตระหง่าน ถนนคดเคี้ยว 29 โค้ง เป็นจุดถ่ายพระอาทิตย์ตกระดับตำนาน",
     stats: { dist: "เดินเล่นสั้น ๆ ได้", gain: "—", diff: "ขับรถ", dur: "แวะ 45–90 นาที", best: "🌅 ช่วงเย็น–พระอาทิตย์ตก — แสงสาดยอด Ra Gusela" },
@@ -657,7 +657,7 @@ const PLACES = [
   },
   {
     id: "wagenbruchsee", kind: "lake", name: "Wagenbrüchsee", alt: "Geroldsee · Krün, Bayern 🇩🇪",
-    ll: [47.49277, 11.22106], driveTo: [47.49277, 11.22106], routeKey: "wagenbruchsee",
+    ll: [47.49277, 11.22106], driveTo: [47.49277, 11.22106], routeKey: "wagenbruchsee", base: "tyrolian",
     outsideRegion: true,   /* อยู่เยอรมนี — ไม่นับตอนจัดกรอบแผนที่เริ่มต้น */
     driveLabel: "จอดที่หมู่บ้าน Gerold แล้วเดินราว 10–15 นาที",
     blurb: "ทะเลสาบเล็กในบาวาเรียที่สะท้อนเงาเทือกเขา Karwendel กับกระท่อมไม้กลางทุ่ง — จุดแวะคลาสสิกระหว่างขับกลับ Munich",
@@ -672,7 +672,7 @@ const PLACES = [
   },
   {
     id: "bressanone", kind: "town", name: "Bressanone", alt: "Brixen",
-    ll: [46.71641, 11.65779], driveTo: [46.71641, 11.65779], routeKey: "bressanone",
+    ll: [46.71641, 11.65779], driveTo: [46.71641, 11.65779], routeKey: "bressanone", base: "margherita",
     driveLabel: "ใจกลางเมือง — ลานจอดในเมือง (เส้นน้ำเงิน = เสียเงิน)",
     blurb: "เมืองเก่าที่สุดของทิโรล มีมหาวิหาร ระเบียงคด และย่านเมืองเก่าเดินได้ — แผนสำรองวันฝนตก อยู่ห่างที่พักแค่ 15 นาที",
     stats: { dist: "—", gain: "—", diff: "เดินเล่นในเมือง", dur: "2–4 ชม.", best: "วันฝนตกหรือช่วงบ่าย" },
@@ -681,7 +681,7 @@ const PLACES = [
   },
   {
     id: "chiusa", kind: "town", name: "Chiusa", alt: "Klausen",
-    ll: [46.63649, 11.56595], driveTo: [46.63649, 11.56595], routeKey: "chiusa",
+    ll: [46.63649, 11.56595], driveTo: [46.63649, 11.56595], routeKey: "chiusa", base: "margherita",
     driveLabel: "ใจกลางเมือง",
     blurb: "หมู่บ้านยุคกลางริมแม่น้ำ Isarco ใต้อาราม Säben ติดอันดับหมู่บ้านสวยที่สุดของอิตาลี — อยู่ห่างที่พักแค่ 10 นาที",
     stats: { dist: "—", gain: "—", diff: "เดินเล่นในเมือง", dur: "1.5–3 ชม.", best: "เย็น" },
