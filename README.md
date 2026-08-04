@@ -65,6 +65,11 @@ python3 stamp_assets.py && git add -A && git commit -m "..." && git push
 (GitHub Pages ตั้ง `cache-control: max-age=600`) แล้วหน้าเว็บจะกลายเป็นครึ่งเก่าครึ่งใหม่
 ซึ่งดูเหมือนบั๊กแต่ไม่ใช่
 
+สคริปต์เดียวกันยังเขียน **วันเวลาที่อัปเดตล่าสุด** ลงใน `<div class="hdr-meta">`
+มุมขวาบนของหน้า (เช่น `อัปเดต 4 ส.ค. 2026 · 18:08` ตามเวลาเครื่องที่รัน deploy)
+— อย่าแก้ค่านั้นในไฟล์ `index.html` ด้วยมือ เพราะจะถูกเขียนทับรอบถัดไป
+ค่านี้จะตรงกับความจริงเสมอตราบใดที่รันสคริปต์ก่อน commit
+
 ## โครงสร้างไฟล์
 
 ```
@@ -77,7 +82,7 @@ assets/routes.js      เส้นทางขับรถที่คำนว�
 assets/app.js         ตรรกะแผนที่และ UI
 assets/style.css
 build_routes.py       สร้าง routes.json จาก OSRM (รันตอน build เท่านั้น)
-stamp_assets.py       ติดหมายเลขเวอร์ชันให้ไฟล์ assets — รันก่อน commit ทุกครั้ง
+stamp_assets.py       ติดหมายเลขเวอร์ชันให้ไฟล์ assets + วันเวลาอัปเดตบนหัวหน้า — รันก่อน commit ทุกครั้ง
 routes.json           ผลลัพธ์ดิบจาก build_routes.py
 screenshots/          ภาพตรวจสอบหน้าเว็บ
 ```
