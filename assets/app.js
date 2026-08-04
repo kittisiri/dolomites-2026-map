@@ -285,13 +285,18 @@
   }
 
   /* --------------------------------------------------------------- รูป
-     รูป 2 ใบต่อสถานที่ · ไฟล์อยู่ใน assets/photos/ ไม่ดึงจากเน็ตตอนรันไทม์
+     รูป 2 ใบต่อสถานที่ · PHOTOS มาจาก assets/photos.js ที่ build_photos.py สร้าง
+     ไฟล์อยู่ในเครื่อง ไม่ดึงจากเน็ตตอนรันไทม์
      ใบไหนโหลดไม่ขึ้นให้ซ่อนช่องนั้นไป ดีกว่าโชว์กรอบว่างหรือไอคอนรูปแตก */
+  var ALL_PHOTOS = (typeof PHOTOS !== "undefined") ? PHOTOS : {};
+
   function photosHtml(p) {
-    var ph = (p.photos || []).slice(0, 2);
+    var ph = (ALL_PHOTOS[p.id] || []).slice(0, 2);
     if (!ph.length) return "";
     return '<div class="photos">' + ph.map(function (x) {
-      var img = '<img src="' + x.src + '" alt="' + esc(p.name) + '" loading="lazy" ' +
+      /* ไม่ใช้ loading="lazy" — แท็กนี้ถูกสร้างตอนเปิดแผงอยู่แล้ว ไม่มีอะไรให้ประหยัด
+         และ lazy ในกล่องที่ยังเลื่อนไม่เข้าจอจะไม่ยอมโหลดจนกว่าจะเลื่อน */
+      var img = '<img src="' + x.src + '" alt="' + esc(p.name) + '" decoding="async" ' +
                 'onerror="this.closest(\'figure\').style.display=\'none\'">';
       var cap = x.by
         ? "<figcaption>" + (x.url

@@ -1,2 +1,6 @@
 *.log
 .DS_Store
+
+# รูปต้นฉบับที่ดุ๊กวางไว้ — ใบละหลาย MB ไม่ commit เข้า repo
+# ตัวที่ deploy คือ assets/photos_web/ ซึ่ง build_photos.py ย่อไว้ให้แล้ว
+assets/photos/
