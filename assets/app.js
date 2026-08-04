@@ -552,9 +552,6 @@
              (i + 1) + ". " + s.t + "</div><div class=\"sugg-d\">" + s.d + "</div></div>";
       });
 
-    h += '<div class="footnote">แผนเที่ยวนี้เป็นร่างที่ดุ๊กให้มา ผมใส่ข้อสังเกตกำกับไว้เท่านั้น ' +
-      "ยังไม่ได้แก้แผนให้ — ถ้าอยากให้ปรับตามข้อเสนอ บอกได้เลย</div>";
-
     el.innerHTML = h;
 
     el.querySelectorAll(".stop").forEach(function (b) {
