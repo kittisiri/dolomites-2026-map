@@ -380,7 +380,9 @@ const PLACES = [
   /* ---------- ที่พัก (เรียงตามวันเข้าพัก) ---------- */
   {
     id: "temblhof", kind: "base", name: "Temblhof", alt: "Vipiteno / Sterzing",
-    ll: [46.92130, 11.44494], routeKey: null,
+    /* พิกัดจากลิงก์ Google Maps ที่ดุ๊กส่งมาเอง 4 ส.ค. 2026 (maps.app.goo.gl/EKkrXndTy2x2Vhwc9)
+       ของเดิม 46.92130, 11.44494 ห่างจากจุดจริง 1.8 กม. — หมุดบนแผนที่และระยะขับรถเลยเพี้ยนตาม */
+    ll: [46.9084507, 11.4306238], routeKey: null,
     dates: "6 ก.ย. 2026 (1 คืน)",
     checkin: "เช็กอิน 15:00–19:00 · เช็กเอาต์ 09:00–10:00 (ช่วงเวลาตายตัวทั้งคู่)",
     address: "Brennerstraße 60, 39049 Vipiteno (Sterzing), Italy",
@@ -389,7 +391,7 @@ const PLACES = [
     stats: null,
     notes: [
       "📍 Vipiteno <b>ยังไม่ใช่ Dolomites</b> — อยู่ใต้ Brenner Pass ลงมานิดเดียว เป็นจุดพักไม่ใช่ที่พักเที่ยว",
-      "จาก Temblhof ไป Santa Cristina ต่ออีกราว 1 ชม. (67 กม.)",
+      "จาก Temblhof ไป Santa Cristina ต่ออีกราว 1 ชม. (65 กม. / 58 นาที)",
       "เช็กเอาต์บังคับ 09:00–10:00 → วันที่ 7 ก.ย. ออกช้าไม่ได้",
     ],
   },
@@ -899,11 +901,12 @@ const PLAN_SUGGESTIONS = [
    ที่พักใช้ที่อยู่เต็มแทนชื่อ — Google หาบ้านพักเล็ก ๆ จากชื่อไม่เจอ แต่หาจากที่อยู่เจอเสมอ
    --------------------------------------------------------------------------- */
 const GMAPS = {
-  /* Temblhof ไม่ใส่ชื่อ — ใช้พิกัดเหมือนเดิม
-     Google ตีความ "Brennerstraße 60, Vipiteno" ไปที่ 46.8915, 11.4361 ซึ่งห่างจากพิกัด
-     ที่เก็บไว้ในไฟล์นี้ (46.9213, 11.4449) ถึง 3.4 กม. — ยังไม่รู้ว่าฝั่งไหนถูก
-     อีกสองที่พักตรวจแล้วตรงกัน (Margherita ห่าง 2 ม. · Tyrolian ห่าง 300 ม.)
-     เลยไม่กล้าเดา ปล่อยไว้ที่พิกัดเดิมจนกว่าจะเช็กกับใบจองได้ */
+  /* Temblhof: ค้นด้วยชื่อไม่ได้ — "Temblhof" และ "Temblhof Vipiteno" คืนหน้าผลค้นหา
+     ส่วนที่อยู่ "Brennerstraße 60" Google ปักผิดไป 1.9 กม.
+     เลยใช้ ftid (รหัสสถานที่ในลิงก์ที่ดุ๊กส่งมา) ซึ่งชี้หมุดเดียวเป๊ะ ๆ
+     ปุ่มนำทางใช้พิกัดที่แก้แล้ว — ftid ใช้กับ URL แบบเส้นทางไม่ได้ */
+  temblhof:      { url: "https://www.google.com/maps?ftid=0x479d530db1fe5e9f:0xd975a05c3a5ad172",
+                   drive: null },
   margherita:    { pin: "Streda Dursan 5, 39047 Santa Cristina Valgardena BZ, Italia" },
   tyrolian:      { pin: "Hans-von-Perthaler-Straße 22, 39030 Valdaora BZ, Italia" },
 

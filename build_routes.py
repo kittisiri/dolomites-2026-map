@@ -63,7 +63,7 @@ for k, d in DESTS.items():
 
 print("== transit legs ==")
 legs = {
-    "temblhof_to_hoferhof": ((46.92130, 11.44494), BASES["hoferhof"]),
+    "temblhof_to_hoferhof": ((46.9084507, 11.4306238), BASES["hoferhof"]),
     "hoferhof_to_munich":   (BASES["hoferhof"], (48.13743, 11.57549)),
 }
 for name, (a, b) in legs.items():

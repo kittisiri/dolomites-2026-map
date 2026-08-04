@@ -14,7 +14,7 @@ DESTS = {
 }
 TYROLIAN   = (46.75763, 12.03882)   # Hans-von-Perthaler-Str. 22, Oberolang
 MARGHERITA = (46.55799, 11.72324)
-TEMBLHOF   = (46.92130, 11.44494)
+TEMBLHOF   = (46.9084507, 11.4306238)
 MUNICH     = (48.13743, 11.57549)
 
 def route(a, b):

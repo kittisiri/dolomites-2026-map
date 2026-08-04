@@ -1,5 +1,29 @@
 /* สร้างอัตโนมัติโดย build_photos.py — อย่าแก้ด้วยมือ */
 const PHOTOS = {
+  "temblhof": [
+    {
+      "src": "assets/photos_web/temblhof-1.jpg"
+    },
+    {
+      "src": "assets/photos_web/temblhof-2.jpg"
+    }
+  ],
+  "margherita": [
+    {
+      "src": "assets/photos_web/margherita-1.jpg"
+    },
+    {
+      "src": "assets/photos_web/margherita-2.jpg"
+    }
+  ],
+  "tyrolian": [
+    {
+      "src": "assets/photos_web/tyrolian-1.jpg"
+    },
+    {
+      "src": "assets/photos_web/tyrolian-2.jpg"
+    }
+  ],
   "tre_cime": [
     {
       "src": "assets/photos_web/tre_cime-1.jpg"
@@ -86,6 +110,70 @@ const PHOTOS = {
     },
     {
       "src": "assets/photos_web/val_di_funes-2.jpg"
+    }
+  ],
+  "passo_gardena": [
+    {
+      "src": "assets/photos_web/passo_gardena-1.jpg"
+    },
+    {
+      "src": "assets/photos_web/passo_gardena-2.jpg"
+    }
+  ],
+  "passo_sella": [
+    {
+      "src": "assets/photos_web/passo_sella-1.jpg"
+    },
+    {
+      "src": "assets/photos_web/passo_sella-2.jpg"
+    }
+  ],
+  "passo_pordoi": [
+    {
+      "src": "assets/photos_web/passo_pordoi-1.jpg"
+    },
+    {
+      "src": "assets/photos_web/passo_pordoi-2.jpg"
+    }
+  ],
+  "falzarego": [
+    {
+      "src": "assets/photos_web/falzarego-1.jpg"
+    },
+    {
+      "src": "assets/photos_web/falzarego-2.jpg"
+    }
+  ],
+  "passo_giau": [
+    {
+      "src": "assets/photos_web/passo_giau-1.jpg"
+    },
+    {
+      "src": "assets/photos_web/passo_giau-2.jpg"
+    }
+  ],
+  "cortina_town": [
+    {
+      "src": "assets/photos_web/cortina_town-1.jpg"
+    },
+    {
+      "src": "assets/photos_web/cortina_town-2.jpg"
+    }
+  ],
+  "bressanone": [
+    {
+      "src": "assets/photos_web/bressanone-1.jpg"
+    },
+    {
+      "src": "assets/photos_web/bressanone-2.jpg"
+    }
+  ],
+  "chiusa": [
+    {
+      "src": "assets/photos_web/chiusa-1.jpg"
+    },
+    {
+      "src": "assets/photos_web/chiusa-2.jpg"
     }
   ]
 };

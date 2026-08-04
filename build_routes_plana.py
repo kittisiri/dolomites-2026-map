@@ -27,7 +27,7 @@ for name, ll in PLAN_A.items():
 
 print("== transit ==")
 legs = {
-    "temblhof_to_margherita": ((46.92130, 11.44494), PLAN_A["margherita"]),
+    "temblhof_to_margherita": ((46.9084507, 11.4306238), PLAN_A["margherita"]),
     "margherita_to_lores":    (PLAN_A["margherita"], PLAN_A["lores"]),
     "lores_to_munich":        (PLAN_A["lores"], (48.13743, 11.57549)),
 }

@@ -50,6 +50,8 @@
     return "https://www.google.com/maps/dir/?api=1&destination=" + gq(p, "drive", p.driveTo || p.ll);
   }
   function gmapsPin(p) {
+    var g = (typeof GMAPS !== "undefined" && GMAPS[p.id]) || {};
+    if (g.url) return g.url;   /* ลิงก์ตรงไปหมุดนั้น ๆ — แม่นกว่าคำค้นเมื่อชื่อหาไม่เจอ */
     return "https://www.google.com/maps/search/?api=1&query=" + gq(p, "pin", p.ll);
   }
 
