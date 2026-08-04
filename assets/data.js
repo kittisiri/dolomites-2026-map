@@ -738,16 +738,8 @@ const BASES = [
   { key: "margherita", label: "Margherita", town: "S. Cristina", sub: "แผน A · 7–9 ก.ย.",  plan: "A", ll: [46.55799, 11.72324] },
   { key: "tyrolian",   label: "Chalet Tyrolian", town: "Valdaora", sub: "แผน A · 9–11 ก.ย.", plan: "A", ll: [46.75763, 12.03882] },
   { key: "hoferhof",   label: "Hofer Hof", town: "Feldthurns", sub: "แผน B · 7–11 ก.ย.",  plan: "B", ll: [46.66876, 11.60971], booked: true },
-  { key: "ortisei",    label: "Ortisei", town: "Val Gardena", sub: "อ้างอิง", ref: true, ll: [46.57642, 11.67507] },
-  { key: "cortina",    label: "Cortina", town: "d'Ampezzo",  sub: "อ้างอิง", ref: true, ll: [46.54050, 12.13600] },
-  { key: "dobbiaco",   label: "Dobbiaco", town: "Toblach",   sub: "อ้างอิง", ref: true, ll: [46.72480, 12.22546] },
 ];
 
-/* จุดที่นำมาเทียบในตารางเปรียบเทียบฐาน (เรียงตามความสำคัญ) */
-const COMPARE_KEYS = [
-  "tre_cime", "braies", "sorapis", "cinque_torri",
-  "seceda", "alpe_di_siusi", "adolf_munkel", "val_di_funes", "falzarego", "passo_gardena",
-];
 
 /* ---------------------------------------------------------------------------
    แผนเที่ยวร่างของแผน A

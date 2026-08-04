@@ -610,121 +610,6 @@
     if (toA) toA.addEventListener("click", function () { setPlan("A"); });
   }
 
-  /* ------------------------------------------------ pane: เทียบฐานที่พัก */
-  function renderCompare() {
-    var el = document.getElementById("cmpPane");
-    var m = ROUTES.matrix;
-
-    function best(bases, key) {
-      var vals = bases.map(function (b) { return (m[b] && m[b][key]) ? m[b][key].min : null; })
-                      .filter(function (v) { return v !== null; });
-      return vals.length ? Math.min.apply(null, vals) : null;
-    }
-    var A = PLANS.A.bases, B = PLANS.B.bases;
-
-    var h = '<div class="notice success">✅ <b>ตัดสินใจแล้ว: ใช้แผน A</b> — Margherita จองแล้ว · Hofer Hof ยกเลิกแล้ว<br>' +
-      'ตารางข้างล่างเก็บไว้เป็นบันทึกเหตุผล ไม่ใช่ตัวเลือกที่ยังเปิดอยู่</div>' +
-      '<div class="cmp-intro"><b>แผน A</b> ย้ายฐาน 2 ที่ (S. Cristina 7–9 ก.ย. → Valdaora 9–11 ก.ย.) · ' +
-      "<b>แผน B</b> อยู่ Hofer Hof ที่เดียว 4 คืน (จองแล้ว ยกเลิกฟรีถึง 23 ส.ค. 2026)<br>" +
-      "ตารางเทียบ<b>เวลาขับเที่ยวเดียว (นาที)</b> ไปแต่ละจุด — แผน A ใช้ฐานที่ใกล้กว่าในสองฐาน " +
-      "เพราะจัดวันให้ตรงกับฐานได้</div>";
-
-    h += '<div style="overflow-x:auto"><table class="cmp"><thead><tr><th>จุดหมาย</th>' +
-      '<th class="booked">แผน A<br>ใกล้สุด</th><th style="font-weight:400">S.Cristina</th>' +
-      '<th style="font-weight:400">Valdaora</th><th class="booked">แผน B<br>Hofer Hof</th>' +
-      '<th style="font-weight:400">ต่าง</th></tr></thead><tbody>';
-
-    var totA = 0, totB = 0, winA = 0, winB = 0;
-
-    COMPARE_KEYS.forEach(function (key) {
-      var p = PLACES.filter(function (x) { return x.routeKey === key; })[0];
-      if (!p) return;
-      var a = best(A, key), b = best(B, key);
-      var mg = (m.margherita && m.margherita[key]) ? m.margherita[key].min : null;
-      var ty = (m.tyrolian && m.tyrolian[key]) ? m.tyrolian[key].min : null;
-      totA += a || 0; totB += b || 0;
-      var diff = (a !== null && b !== null) ? b - a : null;
-      if (diff > 0) winA++; else if (diff < 0) winB++;
-      h += "<tr><td>" + esc(p.name) + "</td>";
-      h += '<td class="' + (a <= b ? "best" : "") + '">' + (a === 0 ? "เดินถึง" : a) + "</td>";
-      h += '<td style="opacity:.6">' + (mg === 0 ? "เดินถึง" : mg) + "</td>";
-      h += '<td style="opacity:.6">' + ty + "</td>";
-      h += '<td class="' + (b < a ? "best" : "") + '">' + b + "</td>";
-      h += '<td style="' + (diff > 0 ? "color:var(--green-700)" : diff < 0 ? "color:var(--rose-700)" : "opacity:.5") + '">' +
-           (diff === null ? "–" : (diff > 0 ? "−" + diff : diff === 0 ? "0" : "+" + (-diff))) + "</td>";
-      h += "</tr>";
-    });
-
-    h += "</tbody><tfoot><tr><td>รวมทั้งหมด</td>" +
-      '<td class="' + (totA <= totB ? "best" : "") + '">' + totA + "</td>" +
-      '<td colspan="2" style="opacity:.4">—</td>' +
-      '<td class="' + (totB < totA ? "best" : "") + '">' + totB + "</td>" +
-      '<td style="color:var(--green-700)">−' + (totB - totA) + "</td></tr></tfoot></table></div>";
-
-    h += '<p style="font-size:11.5px;color:var(--txt-muted);margin-top:6px">' +
-      'คอลัมน์ “ต่าง” = แผน A ประหยัดกว่ากี่นาที (<span style="color:var(--green-700)">เขียว = แผน A เร็วกว่า</span>, ' +
-      '<span style="color:var(--rose-700)">แดง = แผน B เร็วกว่า</span>)</p>';
-
-    /* -------- คำตัดสิน -------- */
-    var west = ["seceda", "alpe_di_siusi", "adolf_munkel", "val_di_funes", "passo_gardena"];
-    var east = ["tre_cime", "braies", "sorapis", "cinque_torri", "falzarego"];
-    function sum(bases, keys) { return keys.reduce(function (a, k) { return a + (best(bases, k) || 0); }, 0); }
-
-    h += '<div class="verdict"><h4>สรุปให้ตัดสินใจ</h4>';
-    h += "<p>📊 <b>แผน A ชนะ " + winA + " จาก " + COMPARE_KEYS.length + " จุด</b> " +
-         "และรวมเวลาขับน้อยกว่า <b>" + (totB - totA) + " นาที</b> (แผน A " + totA + " นาที · แผน B " + totB + " นาที) " +
-         "— ต่างกันราว <b>" + (((totB - totA) / 60).toFixed(1)) + " ชั่วโมง</b> ต่อการเก็บครบทุกจุดหนึ่งรอบ</p>";
-
-    h += "<p>🧭 <b>ทำไมแผน A ถึงชนะ:</b> การย้ายฐานทำให้ไม่ต้องขับสวนหุบเขาทุกวัน — " +
-         "สองคืนแรกอยู่ฝั่งตะวันตกเก็บ <b>Seceda (8 นาที) · Alpe di Siusi (24 นาที) · Passo Sella/Gardena</b> " +
-         "แล้วสองคืนหลังย้ายไปฝั่งเหนือ-ตะวันออกเก็บ <b>Lago di Braies (20 นาที) · Tre Cime (55 นาที) · Sorapis (43 นาที)</b> " +
-         "ส่วนแผน B ต้องขับไป-กลับจากจุดกลางทุกวัน</p>";
-
-    h += "<p>ฝั่งตะวันตก: แผน A <b>" + sum(A, west) + "</b> นาที · แผน B <b>" + sum(B, west) + "</b><br>" +
-         "ฝั่งตะวันออก/เหนือ: แผน A <b>" + sum(A, east) + "</b> นาที · แผน B <b>" + sum(B, east) + "</b></p>";
-
-    h += "<p>⚖️ <b>สิ่งที่ตัวเลขไม่บอก:</b></p><ul class=notes>";
-    h += "<li>🟢 <b>แผน A ได้สิทธิยกเว้น ZTL Passo Gardena</b> ตอนพักที่ Santa Cristina (7–9 ก.ย.) — แผน B ไม่ได้เลยทั้งทริป " +
-         "<b>แต่สิทธินี้หายไปหลังย้ายไป Valdaora</b> ให้ขึ้นพาสในสองคืนแรก</li>";
-    h += "<li>🟢 แผน A: Col Raiser ห่างที่พักแรกแค่ 2 นาที → ขึ้น Seceda ราคา €34 แทน €74 <b>ประหยัด €320 สำหรับ 8 คน</b></li>";
-    h += "<li>🔴 <b>แผน A ต้องเก็บของย้ายกลางทริป</b> — 79 กม. / 77 นาที วันที่ 9 ก.ย. เสียเวลาไปครึ่งวัน (หรือแวะเที่ยวระหว่างทางให้คุ้ม)</li>";
-    h += "<li>🔴 <b>แผน A ต้องจอง 2 ยูนิตในแต่ละที่</b> เพราะยูนิตเดียวไม่พอ 8 คน — แผน B นอนรวมหลังเดียวได้</li>";
-    h += "<li>🔴 <b>แผน A ยังไม่รู้เวลาเช็กอิน/เช็กเอาต์ของทั้งสองที่</b> — สำคัญมากเพราะ 7 ก.ย. ต้องเช็กเอาต์ Temblhof 09:00–10:00</li>";
-    h += "<li>💰 แผน B = €1,836.80 สำหรับ 8 คน 4 คืน (€229.60/คน) · ยังไม่ได้เทียบราคาแผน A</li>";
-    h += "<li>⛽ แผน A ขับน้อยกว่า → ประหยัดน้ำมันและโควตาระยะทางรถเช่า (จำกัด 2,430 กม.)</li>";
-    h += "</ul>";
-    h += "<p style='margin-top:10px'>📅 <b>เดดไลน์: ยกเลิก Hofer Hof ฟรีได้ถึง 23 ส.ค. 2026 23:59</b> หลังจากนั้นเสียเต็มจำนวน</p>";
-    h += "</div>";
-
-    /* -------- ตารางอ้างอิงฐานอื่น -------- */
-    var refs = BASES.filter(function (b) { return b.ref; });
-    h += '<h3 class="sec">ฐานอ้างอิงอื่น ๆ</h3>';
-    h += '<p style="font-size:12.5px;color:var(--txt-muted);margin-top:-4px">ถ้าจะเทียบกับการพักในหุบเขาหลักแบบฐานเดียว</p>';
-    h += '<div style="overflow-x:auto"><table class="cmp"><thead><tr><th>จุดหมาย</th>' +
-      refs.map(function (b) { return "<th>" + esc(b.label) + "</th>"; }).join("") + "</tr></thead><tbody>";
-    var refTot = {}; refs.forEach(function (b) { refTot[b.key] = 0; });
-    COMPARE_KEYS.forEach(function (key) {
-      var p = PLACES.filter(function (x) { return x.routeKey === key; })[0];
-      if (!p) return;
-      h += "<tr><td>" + esc(p.name) + "</td>";
-      refs.forEach(function (b) {
-        var v = (m[b.key] && m[b.key][key]) ? m[b.key][key].min : null;
-        refTot[b.key] += v || 0;
-        h += "<td>" + (v === 0 ? "เดินถึง" : v) + "</td>";
-      });
-      h += "</tr>";
-    });
-    h += "</tbody><tfoot><tr><td>รวมทั้งหมด</td>" +
-      refs.map(function (b) { return "<td>" + refTot[b.key] + "</td>"; }).join("") +
-      "</tr></tfoot></table></div>";
-
-    h += '<div class="footnote">ระยะทางและเวลาคำนวณจาก OSRM บนข้อมูลถนน OpenStreetMap ' +
-         "ตอนสร้างหน้าเว็บ (ไม่ได้เรียก API ตอนเปิดหน้า) · เป็นเวลาขับล้วน ไม่รวมจอดพัก เติมน้ำมัน หรือรถติด · " +
-         "ถนนบนเขามีทางโค้งเยอะ เวลาจริงมักนานกว่านี้ 10–20%</div>";
-
-    el.innerHTML = h;
-  }
-
   /* ---------------------------------------------------------------- tabs */
   function showTab(paneId) {
     document.querySelectorAll("#tabs button").forEach(function (x) {
@@ -739,7 +624,7 @@
   });
 
   /* ------------------------------------------------ ลิงก์ตรง (แชร์ให้กลุ่ม) */
-  var TAB_ALIAS = { places: "placesPane", itin: "itinPane", regs: "regsPane", cmp: "cmpPane" };
+  var TAB_ALIAS = { places: "placesPane", itin: "itinPane", regs: "regsPane" };
 
   function applyHash() {
     var h = "";
@@ -786,7 +671,6 @@
     renderPlaces();
     renderItinerary();
     renderRegs();
-    renderCompare();
     if (legendEl) legendEl.innerHTML = legendHtml();
     /* รีเฟรช popup ให้ตัวเลขตรงกับแผนใหม่ */
     PLACES.forEach(function (p) { if (markers[p.id]) markers[p.id].setPopupContent(popupHtml(p)); });
@@ -810,7 +694,6 @@
   renderPlaces();
   renderItinerary();
   renderRegs();
-  renderCompare();
 
   /* จัดกรอบแผนที่ให้เห็นทุกหมุดของแผนที่เลือกอยู่ */
   var bounds = L.latLngBounds(PLACES.filter(function (p) { return inActivePlan(p) && !p.outsideRegion; })

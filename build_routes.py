@@ -6,9 +6,6 @@ OSRM = "https://router.project-osrm.org/route/v1/driving/"
 
 BASES = {
     "hoferhof": (46.66876, 11.60971),   # Hofer Hof, Weinbergweg 10, Feldthurns
-    "ortisei":  (46.57642, 11.67507),   # alt base: Val Gardena
-    "cortina":  (46.54050, 12.13600),   # alt base: Cortina d'Ampezzo
-    "dobbiaco": (46.72480, 12.22546),   # alt base: Dobbiaco / Toblach
 }
 
 # id -> drive-to point (car park / valley station), NOT necessarily the pin
@@ -51,7 +48,7 @@ def route(a, b, overview="simplified"):
         time.sleep(3)
     return None
 
-out = {"from_hoferhof": {}, "matrix": {}, "transit": {}}
+out = {"from_hoferhof": {}, "transit": {}}
 
 print("== routes from Hofer Hof (with geometry) ==")
 for k, d in DESTS.items():
@@ -62,19 +59,6 @@ for k, d in DESTS.items():
     else:
         print(f"  {k:15s} FAILED")
     time.sleep(1.2)
-
-print("== base-comparison matrix (distance/time only) ==")
-out["matrix"]["hoferhof"] = {k: {"km": v["km"], "min": v["min"]}
-                             for k, v in out["from_hoferhof"].items()}
-print(f"  hoferhof: {len(out['matrix']['hoferhof'])}/{len(DESTS)} (reused)")
-for base in ("ortisei", "cortina", "dobbiaco"):
-    out["matrix"][base] = {}
-    for k, d in DESTS.items():
-        r = route(BASES[base], d, overview="false")
-        if r:
-            out["matrix"][base][k] = {"km": r["km"], "min": r["min"]}
-        time.sleep(1.1)
-    print(f"  {base}: {len(out['matrix'][base])}/{len(DESTS)}")
 
 print("== transit legs ==")
 legs = {
