@@ -11,10 +11,10 @@
   var BASE_BY_KEY = {};
   BASES.forEach(function (b) { BASE_BY_KEY[b.key] = b; });
 
-  /* ฐานที่พักสองที่ เรียงตามลำดับวันเข้าพัก */
+  /* ที่พักสองที่ เรียงตามลำดับวันเข้าพัก */
   var BASE_KEYS = BASES.map(function (b) { return b.key; });
 
-  /* เวลาขับจากฐานไปจุดหนึ่ง — คืนค่าที่ดีที่สุดและรายละเอียดรายฐาน */
+  /* เวลาขับจากที่พักไปจุดหนึ่ง — คืนค่าที่ดีที่สุดและรายละเอียดรายที่พัก */
   function driveFromBases(routeKey) {
     if (!routeKey) return null;
     var per = BASE_KEYS.map(function (bk) {
@@ -142,7 +142,7 @@
         allRouteLines.push({ key: key, base: bk, line: line });
       });
     });
-    /* ขาเข้าทริปจาก Temblhof + ขาย้ายฐานกลางทริป 9 ก.ย. */
+    /* ขาเข้าทริปจาก Temblhof + ขาย้ายที่พักกลางทริป 9 ก.ย. */
     var t = ROUTES.transit && ROUTES.transit.temblhof_to_margherita;
     if (t && t.coords) {
       L.polyline(t.coords, { color: "#5183A9", weight: 3, opacity: 0.7, dashArray: "7 6" })
@@ -155,14 +155,14 @@
       if (mv && mv.coords) {
         L.polyline(mv.coords, { color: "#78716C", weight: 3.5, opacity: 0.8, dashArray: "3 7" })
           .addTo(routeLayer)
-          .bindTooltip("9 ก.ย. — ย้ายฐาน (เส้นปกติ) S. Cristina → Valdaora · <b>" +
+          .bindTooltip("9 ก.ย. — ย้ายที่พัก (เส้นปกติ) S. Cristina → Valdaora · <b>" +
                        mv.km + " กม. / " + mv.min + " นาที</b><br>ไม่ผ่านช่องเขาที่มีข้อจำกัด", { sticky: true });
       }
       var sc = ROUTES.transit && ROUTES.transit.margherita_to_tyrolian_scenic;
       if (sc && sc.coords) {
         L.polyline(sc.coords, { color: "#A7695B", weight: 3.5, opacity: 0.85, dashArray: "10 6" })
           .addTo(routeLayer)
-          .bindTooltip("9 ก.ย. — ย้ายฐาน (<b>เส้นสวย</b>) ผ่าน Passo Gardena → Corvara → Val Badia · <b>" +
+          .bindTooltip("9 ก.ย. — ย้ายที่พัก (<b>เส้นสวย</b>) ผ่าน Passo Gardena → Corvara → Val Badia · <b>" +
                        sc.km + " กม. / " + sc.min + " นาที</b><br>" +
                        "สั้นกว่าเส้นปกติ 9.6 กม. ช้ากว่า 7 นาที · ⚠️ ต้องมีใบอนุญาต ZTL จากที่พัก", { sticky: true });
       }
@@ -209,16 +209,7 @@
     var rows = Object.keys(KIND_META).map(function (k) {
       return '<div class="row"><i style="background:' + KIND_META[k].color + '"></i>' + KIND_META[k].label + "</div>";
     }).join("");
-    var h = rows + "<hr>" +
-      '<div class="row"><span style="color:var(--rose-700);font-weight:900">!</span> ต้องจองล่วงหน้า</div>';
-    BASE_KEYS.forEach(function (bk) {
-      h += '<div class="row"><i style="background:' + (BASE_COLOR[bk] || "#3D678A") +
-           ';border-radius:2px;height:3px"></i> จาก ' + esc(BASE_BY_KEY[bk].town) + "</div>";
-    });
-    h += '<div class="row"><i style="background:#5183A9;border-radius:2px;height:3px"></i> Temblhof → S. Cristina</div>';
-    h += '<div class="row"><i style="background:#78716C;border-radius:2px;height:3px"></i> ย้ายฐาน 9 ก.ย. (เส้นปกติ)</div>';
-    h += '<div class="row"><i style="background:#A7695B;border-radius:2px;height:3px"></i> ย้ายฐาน 9 ก.ย. (เส้นสวย)</div>';
-    return h;
+    return rows;   /* เส้นทางมี tooltip อยู่แล้ว ไม่ต้องมีคำอธิบายซ้ำในกล่อง */
   }
   legend.addTo(map);
 
@@ -269,7 +260,7 @@
         h += "<span>🚗 <b>" + dr.best.min + " นาที</b> จาก " + esc(BASE_BY_KEY[dr.best.base].town) +
              ' <span style="opacity:.65">· ' + dr.worst.min + " นาที จาก " + esc(BASE_BY_KEY[dr.worst.base].town) + "</span></span>";
       } else {
-        h += "<span>🚗 <b>" + dr.best.km + " กม.</b> / <b>" + dr.best.min + " นาที</b> จากฐาน</span>";
+        h += "<span>🚗 <b>" + dr.best.km + " กม.</b> / <b>" + dr.best.min + " นาที</b> จากที่พัก</span>";
       }
     }
     if (p.stats && p.stats.dur) h += "<span>⏱ " + esc(p.stats.dur) + "</span>";
@@ -374,9 +365,9 @@
       h += "</dl>";
     }
 
-    /* --- เวลาขับจากแต่ละฐานของแผนนี้ --- */
+    /* --- เวลาขับจากแต่ละที่พักของแผนนี้ --- */
     if (dr && dr.multi) {
-      h += "<h3>ขับจากฐานไหนใกล้กว่า</h3><dl class=statgrid>";
+      h += "<h3>ขับจากที่พักไหนใกล้กว่า</h3><dl class=statgrid>";
       dr.per.forEach(function (x) {
         var isBest = x.base === dr.best.base;
         h += "<dt>" + esc(BASE_BY_KEY[x.base].town) + "</dt><dd" +
@@ -384,13 +375,13 @@
              x.km + " กม. · " + x.min + " นาที" + (isBest ? "  ← ใกล้กว่า" : "") + "</dd>";
       });
       h += "</dl>";
-      h += '<p style="font-size:12.5px;color:var(--txt-muted);margin-top:8px">จัดวันให้ตรงกับฐานที่ใกล้กว่า จะประหยัดเวลาขับได้มาก</p>';
+      h += '<p style="font-size:12.5px;color:var(--txt-muted);margin-top:8px">จัดวันให้ตรงกับที่พักที่ใกล้กว่า จะประหยัดเวลาขับได้มาก</p>';
     }
 
     /* --- สถิติเส้นทางเดิน --- */
     if (p.stats) {
       h += "<h3>ข้อมูลเส้นทาง</h3><dl class=statgrid>";
-      if (dr && !dr.multi) h += "<dt>ขับจากฐาน</dt><dd>" + dr.best.km + " กม. · " + dr.best.min + " นาที</dd>";
+      if (dr && !dr.multi) h += "<dt>ขับจากที่พัก</dt><dd>" + dr.best.km + " กม. · " + dr.best.min + " นาที</dd>";
       if (p.stats.dist) h += "<dt>ระยะทางเดิน</dt><dd>" + esc(p.stats.dist) + "</dd>";
       if (p.stats.gain) h += "<dt>ความสูงที่ไต่</dt><dd>" + esc(p.stats.gain) + "</dd>";
       if (p.stats.diff) h += "<dt>ความยาก</dt><dd>" + esc(p.stats.diff) + "</dd>";
@@ -502,35 +493,7 @@
 
     var h = '<div class="notice info"><b>แผนเที่ยวร่าง 7–11 ก.ย.</b><br>' +
       "คลิกชื่อสถานที่ในแต่ละวันเพื่อเปิดรายละเอียด ระยะทาง และกฎที่ต้องจอง · " +
-      'ตัวเลขเวลาขับคิดจากฐานของวันนั้น</div>';
-
-    /* ---- ต้องจองอะไร ภายในเมื่อไร ---- */
-    var SEV_LABEL = {
-      block: { icon: "🔴", label: "ไม่จอง = ไปไม่ได้" },
-      money: { icon: "💸", label: "มีเงินเป็นเดิมพัน" },
-      soft:  { icon: "🟠", label: "มีทางเลี่ยง" },
-      info:  { icon: "🔵", label: "ทำก่อนได้เปรียบ" },
-    };
-    var sevOrder = { money: 0, block: 1, soft: 2, info: 3 };
-    var nBlock = BOOKINGS.filter(function (b) { return b.sev === "block" || b.sev === "money"; }).length;
-
-    h += '<h3 class="sec">ต้องจองอะไร ภายในเมื่อไร</h3>';
-    h += '<p style="font-size:12.5px;color:var(--txt-muted);margin-top:-4px">' +
-         "เรียงตามความเร่งด่วน · <b>" + nBlock + " รายการแรกคือของจริง</b> ที่พลาดแล้วแก้ไม่ได้</p>";
-
-    BOOKINGS.slice().sort(function (a, b) { return sevOrder[a.sev] - sevOrder[b.sev]; })
-      .forEach(function (bk) {
-        var s = SEV_LABEL[bk.sev];
-        h += '<div class="bk sev-' + bk.sev + '">';
-        h += '<div class="bk-head"><span class="bk-what">' + s.icon + " " + esc(bk.what) + "</span>" +
-             '<span class="bk-when">' + esc(bk.when) + "</span></div>";
-        h += '<div class="bk-meta">' + esc(bk.day) + " · <b>" + esc(bk.cost) + "</b> · " + esc(s.label) + "</div>";
-        h += '<div class="bk-why">' + bk.why + "</div>";
-        h += '<div class="bk-act">👉 ' + bk.action + "</div>";
-        if (bk.url) h += '<a class="btn book" style="margin-top:8px" href="' + bk.url +
-                         '" target="_blank" rel="noopener">🔗 เปิดเว็บทางการ</a>';
-        h += "</div>";
-      });
+      'ตัวเลขเวลาขับคิดจากที่พักของวันนั้น</div>';
 
     h += '<h3 class="sec">แผนเที่ยวรายวัน</h3>';
 
@@ -565,6 +528,34 @@
       });
       h += "</div>";
     });
+
+    /* ---- ต้องจองอะไร ภายในเมื่อไร ---- */
+    var SEV_LABEL = {
+      block: { icon: "🔴", label: "ไม่จอง = ไปไม่ได้" },
+      money: { icon: "💸", label: "มีเงินเป็นเดิมพัน" },
+      soft:  { icon: "🟠", label: "มีทางเลี่ยง" },
+      info:  { icon: "🔵", label: "ทำก่อนได้เปรียบ" },
+    };
+    var sevOrder = { money: 0, block: 1, soft: 2, info: 3 };
+    var nBlock = BOOKINGS.filter(function (b) { return b.sev === "block" || b.sev === "money"; }).length;
+
+    h += '<h3 class="sec">ต้องจองอะไร ภายในเมื่อไร</h3>';
+    h += '<p style="font-size:12.5px;color:var(--txt-muted);margin-top:-4px">' +
+         "เรียงตามความเร่งด่วน · <b>" + nBlock + " รายการแรกคือของจริง</b> ที่พลาดแล้วแก้ไม่ได้</p>";
+
+    BOOKINGS.slice().sort(function (a, b) { return sevOrder[a.sev] - sevOrder[b.sev]; })
+      .forEach(function (bk) {
+        var s = SEV_LABEL[bk.sev];
+        h += '<div class="bk sev-' + bk.sev + '">';
+        h += '<div class="bk-head"><span class="bk-what">' + s.icon + " " + esc(bk.what) + "</span>" +
+             '<span class="bk-when">' + esc(bk.when) + "</span></div>";
+        h += '<div class="bk-meta">' + esc(bk.day) + " · <b>" + esc(bk.cost) + "</b> · " + esc(s.label) + "</div>";
+        h += '<div class="bk-why">' + bk.why + "</div>";
+        h += '<div class="bk-act">👉 ' + bk.action + "</div>";
+        if (bk.url) h += '<a class="btn book" style="margin-top:8px" href="' + bk.url +
+                         '" target="_blank" rel="noopener">🔗 เปิดเว็บทางการ</a>';
+        h += "</div>";
+      });
 
     /* ---- ข้อเสนอ ---- */
     h += '<h3 class="sec">ข้อเสนอของผม</h3>';
