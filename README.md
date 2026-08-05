@@ -12,6 +12,9 @@
 | 6 ก.ย. | **Temblhof**, Vipiteno | 15:00–19:00 → 09:00–10:00 |
 | 7–8 ก.ย. | **Apartments Heritage House Margherita**, Santa Cristina Val Gardena | 15:00–19:00 → ก่อน 10:00 |
 | 9–10 ก.ย. | **Chalet Tyrolian Apartments**, Valdaora / Olang | 16:00–20:00 → 08:00–10:00 |
+| 11 ก.ย. | **Super 8 by Wyndham Munich City North** (คืนสุดท้าย กลับถึง Munich) | หลัง 15:00 → 06:30–12:00 |
+
+ครบทุกคืนแล้ว · คืน 11 ก.ย. แยกกันนอน — รายการนี้คือห้องของดุ๊กกับวอลนัท คนอื่นจองของตัวเอง
 
 ## เว็บมีอะไรบ้าง
 
