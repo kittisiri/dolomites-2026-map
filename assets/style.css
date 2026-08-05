@@ -437,6 +437,23 @@ tfoot td {
 .leaflet-marker-icon.base-pin .pin { width: 36px; height: 36px; }
 .leaflet-marker-icon.base-pin .pin span { font-size: 17px; }
 
+/* ป้ายชื่อเล็ก ๆ เหนือหมุด — อ่านได้ว่าหมุดไหนคือที่ไหนโดยไม่ต้องคลิก
+   pointer-events:none เพื่อไม่ให้ป้ายที่ยื่นออกมาไปบังการคลิกหมุดข้าง ๆ */
+.pin-label {
+  /* 8px เหนือหมุด — พ้นจุด "!" ที่ลอยอยู่มุมบนขวาของหมุดพอดี */
+  position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+  width: max-content; max-width: 104px;
+  padding: 1px 5px; border-radius: 5px;
+  background: rgba(250, 250, 249, .93); border: 1px solid rgba(120, 113, 108, .35);
+  box-shadow: 0 1px 2px rgba(28, 25, 23, .2);
+  color: var(--stone-900); font-size: 10px; font-style: normal; font-weight: 500;
+  line-height: 1.3; text-align: center;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  pointer-events: none;
+}
+.leaflet-marker-icon.base-pin .pin-label { font-size: 11px; font-weight: 700; max-width: 116px; }
+.leaflet-container.hide-pin-labels .pin-label { display: none; }
+
 .leaflet-popup-content-wrapper {
   background: var(--card); color: var(--txt);
   border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow);

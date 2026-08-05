@@ -87,7 +87,8 @@
     return L.divIcon({
       className: "pin-wrap" + (isBase ? " base-pin" : ""),
       html: '<div class="pin' + flag + '" style="background:' + meta.color + '">' +
-            "<span>" + meta.icon + "</span></div>",
+            "<span>" + meta.icon + "</span></div>" +
+            '<i class="pin-label">' + esc(place.name) + "</i>",
       iconSize: isBase ? [34, 34] : [28, 28],
       iconAnchor: isBase ? [17, 32] : [14, 26],
       popupAnchor: [0, -24]
@@ -121,6 +122,14 @@
     m.on("click", function () { highlightRoute(p); });
     markers[p.id] = m;
   });
+
+  /* ป้ายชื่อใต้หมุด — ซ่อนตอนซูมออกไกล ไม่งั้นชื่อ 48 จุดทับกันจนอ่านไม่ออก */
+  var LABEL_MIN_ZOOM = 10;
+  function syncPinLabels() {
+    map.getContainer().classList.toggle("hide-pin-labels", map.getZoom() < LABEL_MIN_ZOOM);
+  }
+  map.on("zoomend", syncPinLabels);
+  syncPinLabels();
 
   map.on("popupopen", function (e) {
     var link = e.popup.getElement().querySelector("[data-open]");
