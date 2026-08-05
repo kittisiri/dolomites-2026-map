@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
-<title>The Dolomites · 6–11 กันยายน 2026 — แผนที่ทริป</title>
-<meta name="description" content="แผนที่ทริป Dolomites 6–11 ก.ย. 2026 — ที่พัก เส้นทางเดินป่า เส้นทางขับรถ และกฎการเข้าถึงปี 2026 ที่ต้องจองล่วงหน้า">
+<title>Germany &amp; The Dolomites · 2–11 กันยายน 2026 — แผนที่ทริป</title>
+<meta name="description" content="แผนที่ทริปเยอรมนีและ Dolomites 2–11 ก.ย. 2026 — ที่พัก เส้นทางเดินป่า เส้นทางขับรถ และกฎการเข้าถึงปี 2026 ที่ต้องจองล่วงหน้า">
 <meta name="color-scheme" content="light">
 <link rel="stylesheet" href="assets/leaflet.css?v=43-9fc56ab">
 <link rel="stylesheet" href="assets/style.css?v=43-9fc56ab">
@@ -17,7 +17,7 @@
 
 <header>
   <button id="menuBtn" aria-label="เปิด/ปิดแผงข้อมูล">☰ รายการ</button>
-  <h1>🏔️ The Dolomites <span>6–11 ก.ย. 2026</span></h1>
+  <h1>🏔️ Germany &amp; The Dolomites <span>2–11 ก.ย. 2026</span></h1>
   <div class="hdr-spacer"></div>
   <div class="hdr-meta"><span class="hm-long">อัปเดต 5 ส.ค. 2026 · 14:18</span><span class="hm-short">5 ส.ค. · 14:18</span></div>
 </header>
@@ -26,7 +26,8 @@
   <aside id="sidebar">
     <nav id="tabs">
       <button class="on" data-pane="placesPane">สถานที่</button>
-      <button data-pane="itinPane">แผนเที่ยว</button>
+      <button data-pane="itinPane">แผนเที่ยว Dolomites</button>
+      <button data-pane="walnutPane">Walnut 2-6 Sep</button>
       <button data-pane="regsPane">กฎ 2026</button>
     </nav>
 
@@ -38,12 +39,16 @@
       <div class="filters" id="filters"></div>
       <div id="placeList"></div>
       <div class="footnote">
-        ตัวเลขระยะทางและเวลาขับรถวัดจาก<b>ที่พักของช่วงนั้น</b> (S. Cristina 7–9 ก.ย. · Valdaora 9–11 ก.ย.) ตามถนนจริง
-        คำนวณไว้ล่วงหน้าตอนสร้างหน้าเว็บ · ชื่อสถานที่คงภาษาอิตาลี/เยอรมันไว้ให้ตรงกับป้ายถนนและ Google Maps
+        ตัวเลขระยะทางและเวลาขับรถวัดจาก<b>ที่พักของคืนนั้น</b> ตามถนนจริง คำนวณไว้ล่วงหน้าตอนสร้างหน้าเว็บ —
+        Hohenschwangau 2–3 ก.ย. · Grainau 3–4 ก.ย. · Höhenried 4–6 ก.ย. · S. Cristina 7–9 ก.ย. · Valdaora 9–11 ก.ย.<br>
+        วันที่ 2 และ 6 ก.ย. เป็นวันขับย้ายที่พัก บางจุดจึงอยู่<b>ก่อน</b>เช็กอิน — ตัวเลขยังวัดจากที่พักของคืนนั้นเหมือนกันหมด
+        เพื่อให้เทียบกันได้ · ชื่อสถานที่คงภาษาอิตาลี/เยอรมันไว้ให้ตรงกับป้ายถนนและ Google Maps
       </div>
     </section>
 
     <section id="itinPane" class="pane"></section>
+
+    <section id="walnutPane" class="pane"></section>
 
     <section id="regsPane" class="pane">
       <div id="regList"></div>

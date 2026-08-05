@@ -134,7 +134,11 @@
 
   /* ---------------------------------------------------------- route lines */
   var allRouteLines = [];
-  var BASE_COLOR = { margherita: "#487E32", tyrolian: "#A46604" };
+  var BASE_COLOR = {
+    margherita: "#487E32", tyrolian: "#A46604",
+    /* บาวาเรีย 2–6 ก.ย. */
+    mueller: "#7C4A63", quellenhof: "#4E6E8E", hohenried: "#5C7A4A",
+  };
 
   function drawAllRoutes() {
     routeLayer.clearLayers();
@@ -174,6 +178,19 @@
                        "สั้นกว่าเส้นปกติ 9.6 กม. ช้ากว่า 7 นาที · ⚠️ ต้องมีใบอนุญาต ZTL จากที่พัก", { sticky: true });
       }
     }
+    /* ช่วงบาวาเรีย 2–6 ก.ย. — ขาย้ายที่พักวันต่อวัน */
+    [
+      { key: "munich_to_hohenschwangau", label: "2 ก.ย. — Munich → Hohenschwangau" },
+      { key: "mueller_to_quellenhof",    label: "3 ก.ย. — Hohenschwangau → Grainau" },
+      { key: "quellenhof_to_hohenried",  label: "4 ก.ย. — Grainau → Schloss Höhenried" },
+      { key: "hohenried_to_temblhof",    label: "6 ก.ย. — Höhenried → Temblhof (Vipiteno)" },
+    ].forEach(function (leg) {
+      var r = ROUTES.transit && ROUTES.transit[leg.key];
+      if (!r || !r.coords) return;
+      L.polyline(r.coords, { color: "#8B7BA0", weight: 3, opacity: 0.65, dashArray: "7 6" })
+        .addTo(routeLayer)
+        .bindTooltip(leg.label + " · <b>" + r.km + " กม. / " + r.min + " นาที</b>", { sticky: true });
+    });
   }
 
   function routeLabel(baseKey, key, r) {
@@ -285,7 +302,9 @@
 
   function renderPlaces() {
     var list = document.getElementById("placeList");
-    var order = ["base", "hike", "lake", "view", "pass", "town"];
+    /* ⚠️ kind ที่ไม่อยู่ในลิสต์นี้จะหายจากรายการเงียบ ๆ ทั้งที่ยังมีหมุดบนแผนที่
+       เพิ่ม kind ใหม่ใน KIND_META แล้วต้องมาเพิ่มตรงนี้ด้วยเสมอ */
+    var order = ["base", "hike", "lake", "view", "pass", "town", "castle", "culture", "leisure"];
     var html = "";
     order.forEach(function (kind) {
       if (!activeKinds[kind]) return;
@@ -517,16 +536,16 @@
   /* -------------------------------------------------- pane: แผนเที่ยว */
   var SEV_ICON = { high: "🔴", med: "🟠", ok: "🟢" };
 
-  function renderItinerary() {
-    var el = document.getElementById("itinPane");
+  /* ใช้ร่วมกันสองแท็บ — โดโลไมต์ 7–11 ก.ย. และบาวาเรีย 2–6 ก.ย.
+     โครงเหมือนกันทุกอย่าง ต่างกันแค่ข้อมูลที่ป้อนเข้าไป */
+  function renderItinerary(paneId, days, bookings, suggestions, noticeHtml) {
+    var el = document.getElementById(paneId);
 
-    var h = '<div class="notice info"><b>แผนเที่ยวร่าง 7–11 ก.ย.</b><br>' +
-      "คลิกชื่อสถานที่ในแต่ละวันเพื่อเปิดรายละเอียด ระยะทาง และกฎที่ต้องจอง · " +
-      'ตัวเลขเวลาขับคิดจากที่พักของวันนั้น</div>';
+    var h = '<div class="notice info">' + noticeHtml + "</div>";
 
     h += '<h3 class="sec">แผนเที่ยวรายวัน</h3>';
 
-    ITINERARY.forEach(function (day) {
+    days.forEach(function (day) {
       h += '<div class="day">';
       h += '<div class="day-head"><span class="day-date">' + esc(day.date) +
            '<small>' + esc(day.dow) + "</small></span>" +
@@ -566,13 +585,13 @@
       info:  { icon: "🔵", label: "ทำก่อนได้เปรียบ" },
     };
     var sevOrder = { money: 0, block: 1, soft: 2, info: 3 };
-    var nBlock = BOOKINGS.filter(function (b) { return b.sev === "block" || b.sev === "money"; }).length;
+    var nBlock = bookings.filter(function (b) { return b.sev === "block" || b.sev === "money"; }).length;
 
     h += '<h3 class="sec">ต้องจองอะไร ภายในเมื่อไร</h3>';
     h += '<p style="font-size:12.5px;color:var(--txt-muted);margin-top:-4px">' +
          "เรียงตามความเร่งด่วน · <b>" + nBlock + " รายการแรกคือของจริง</b> ที่พลาดแล้วแก้ไม่ได้</p>";
 
-    BOOKINGS.slice().sort(function (a, b) { return sevOrder[a.sev] - sevOrder[b.sev]; })
+    bookings.slice().sort(function (a, b) { return sevOrder[a.sev] - sevOrder[b.sev]; })
       .forEach(function (bk) {
         var s = SEV_LABEL[bk.sev];
         h += '<div class="bk sev-' + bk.sev + '">';
@@ -590,7 +609,7 @@
     h += '<h3 class="sec">ข้อเสนอจาก AI</h3>';
     h += '<p style="font-size:12.5px;color:var(--txt-muted);margin-top:-4px">เรียงจากที่ควรทำก่อน</p>';
     var order = { high: 0, med: 1 };
-    PLAN_SUGGESTIONS.slice().sort(function (a, b) { return order[a.sev] - order[b.sev]; })
+    suggestions.slice().sort(function (a, b) { return order[a.sev] - order[b.sev]; })
       .forEach(function (s, i) {
         h += '<div class="sugg sev-' + s.sev + '"><div class="sugg-t">' +
              (i + 1) + ". " + s.t + "</div><div class=\"sugg-d\">" + s.d + "</div></div>";
@@ -617,7 +636,7 @@
   });
 
   /* ------------------------------------------------ ลิงก์ตรง (แชร์ให้กลุ่ม) */
-  var TAB_ALIAS = { places: "placesPane", itin: "itinPane", regs: "regsPane" };
+  var TAB_ALIAS = { places: "placesPane", itin: "itinPane", walnut: "walnutPane", regs: "regsPane" };
 
   function applyHash() {
     var h = "";
@@ -645,15 +664,33 @@
   renderFilters();
   syncMarkers();
   renderPlaces();
-  renderItinerary();
+  renderItinerary("itinPane", ITINERARY, BOOKINGS, PLAN_SUGGESTIONS,
+    "<b>แผนเที่ยวร่าง 7–11 ก.ย. — โดโลไมต์ 8 คน 2 คัน</b><br>" +
+    "คลิกชื่อสถานที่ในแต่ละวันเพื่อเปิดรายละเอียด ระยะทาง และกฎที่ต้องจอง · " +
+    "ตัวเลขเวลาขับคิดจากที่พักของวันนั้น");
+  renderItinerary("walnutPane", ITINERARY_BAVARIA, BOOKINGS_BAVARIA, PLAN_SUGGESTIONS_BAVARIA,
+    "<b>บาวาเรีย 2–6 ก.ย. — ช่วงของดุ๊กกับวอลนัท</b><br>" +
+    "หมุดทั้งหมดมาจากแผนที่ที่<b>วอลนัททำไว้</b> ไม่ได้เพิ่มเอง · " +
+    "ตัวเลขเวลาขับคำนวณตามถนนจริงจากที่พักของคืนนั้น");
   renderRegs();
 
-  /* จัดกรอบแผนที่ให้เห็นทุกหมุดของแผนที่เลือกอยู่ */
-  var bounds = L.latLngBounds(PLACES.filter(function (p) { return !p.outsideRegion; })
-                                   .map(function (p) { return p.ll; }));
-  map.fitBounds(bounds.pad(0.08));
+  /* จัดกรอบแผนที่ให้เห็นทุกหมุด — ทั้งบาวาเรียและโดโลไมต์ */
+  function fitAllPlaces() {
+    /* ต้อง invalidateSize ก่อนเสมอ — ตอนสคริปต์รัน เลย์เอาต์ยังไม่นิ่ง
+       ช่องแผนที่ยังกว้างเต็มจอ (แถบข้างยังไม่กินที่) → Leaflet จะเลือกซูมใกล้เกินไป
+       แล้วพอแถบข้างมาแทรก หมุดครึ่งหนึ่งจะหลุดออกนอกกรอบ */
+    map.invalidateSize();
+    map.fitBounds(L.latLngBounds(PLACES.map(function (p) { return p.ll; })).pad(0.08));
+  }
+  fitAllPlaces();
 
   applyHash();
+
+  /* เลย์เอาต์นิ่งจริงหลัง load (ฟอนต์ + แถบข้าง) — จัดกรอบใหม่ด้วยขนาดจริง
+     เว้นแต่ผู้ใช้เปิดรายละเอียดที่ไหนไว้แล้วจากลิงก์ #place= */
+  window.addEventListener("load", function () {
+    if (!selectedId) fitAllPlaces();
+  });
 
   window.__mapReady = true;
 })();
