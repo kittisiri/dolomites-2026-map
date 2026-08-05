@@ -35,6 +35,8 @@ DESTS = [
     ("garmisch",             "quellenhof", 47.4919023, 11.0947806),
     ("mittenwald",           "quellenhof", 47.4413018, 11.2640301),
     ("linderhof",            "quellenhof", 47.5716123, 10.9608242),
+    ("ettal",                "quellenhof", 47.5697000, 11.0946000),
+    ("oberammergau",         "quellenhof", 47.5980000, 11.0670000),
     # --- 5 ก.ย. วัดจาก Schloss Höhenried (ส่วนใหญ่เดินถึง) ---
     ("buchheim",             "hohenried",  47.8728420, 11.2890040),
     ("bernried_park",        "hohenried",  47.8615340, 11.3007050),
@@ -45,6 +47,10 @@ DESTS = [
     ("suedbad_tutzing",      "hohenried",  47.8967600, 11.2747600),
     ("boot_sebald",          "hohenried",  47.9065000, 11.3355737),
     # --- 6 ก.ย. จุดแวะระหว่างทางลงใต้ วัดจากจุดออกเดินทาง ---
+    # Eibsee ย้ายมาวันที่ 6 (เดินกับแต๊ก+แอน) จึงวัดจาก Höhenried ไม่ใช่ Quellenhof
+    ("eibsee",               "hohenried",  47.4560890, 10.9914240),
+    # Partnachklamm วัดถึง "ลานจอด Olympia-Skistadion" ไม่ใช่ปากช่องเขา — ขับเข้าไปไม่ได้
+    ("partnachklamm",        "hohenried",  47.4903000, 11.1160000),
     ("murnau",               "hohenried",  47.6781942, 11.2009226),
     ("seefeld",              "hohenried",  47.3300017, 11.1877742),
     ("europabruecke",        "hohenried",  47.2002845, 11.4004247),
