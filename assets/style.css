@@ -442,13 +442,16 @@ tfoot td {
 .leaflet-popup-tip { background: var(--card); border: 1px solid var(--border); }
 .leaflet-popup-content { margin: 16px; font-size: 14px; line-height: 1.6; }
 .leaflet-popup-content b { font-size: 16px; color: var(--stone-900); }
+/* ปุ่มในป๊อปอัป — ค่าเริ่มต้นเป็นสี stone (ปุ่มรอง) · เติมคลาส .primary ให้เป็นสีน้ำเงิน */
 .leaflet-popup-content .pop-btn {
   display: inline-block; margin-top: 8px;
-  background: var(--blue-600); color: var(--stone-50);
+  background: var(--stone-600); color: var(--stone-50);
   padding: 6px 12px; border-radius: var(--radius);
   text-decoration: none; font-weight: 500; font-size: 13px;
 }
-.leaflet-popup-content .pop-btn:hover { background: var(--blue-700); text-decoration: none; }
+.leaflet-popup-content .pop-btn:hover { background: var(--stone-700); text-decoration: none; }
+.leaflet-popup-content .pop-btn.primary { background: var(--blue-600); }
+.leaflet-popup-content .pop-btn.primary:hover { background: var(--blue-700); }
 .leaflet-container a.leaflet-popup-close-button { color: var(--stone-500); }
 .leaflet-control-attribution {
   background: rgba(250, 250, 249, .9) !important; color: var(--stone-600) !important;

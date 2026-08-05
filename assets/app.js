@@ -110,7 +110,7 @@
       h += '<div style="margin-top:6px;font-size:12px;color:var(--rose-700)">⚠️ ต้องจองล่วงหน้า — ดูรายละเอียดในแผงข้อมูล</div>';
     }
     h += '<a class="pop-btn" href="' + gmapsDir(p) + '" target="_blank" rel="noopener">เปิดใน Google Maps</a>';
-    h += ' <a class="pop-btn" style="background:var(--stone-600);color:var(--stone-900)" href="#" data-open="' + p.id + '">รายละเอียด</a>';
+    h += ' <a class="pop-btn primary" href="#" data-open="' + p.id + '">รายละเอียด</a>';
     return h;
   }
 
