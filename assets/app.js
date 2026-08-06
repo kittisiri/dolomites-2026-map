@@ -674,7 +674,7 @@
   syncMarkers();
   renderPlaces();
   renderItinerary("itinPane", ITINERARY, BOOKINGS, PLAN_SUGGESTIONS,
-    "<b>แผนเที่ยวร่าง 7–11 ก.ย. — โดโลไมต์ 8 คน 2 คัน</b><br>" +
+    "<b>แผนเที่ยวร่าง 7–12 ก.ย. — โดโลไมต์ 8 คน 2 คัน</b><br>" +
     "คลิกชื่อสถานที่ในแต่ละวันเพื่อเปิดรายละเอียด ระยะทาง และกฎที่ต้องจอง · " +
     "ตัวเลขเวลาขับคิดจากที่พักของวันนั้น");
   renderItinerary("walnutPane", ITINERARY_BAVARIA, BOOKINGS_BAVARIA, PLAN_SUGGESTIONS_BAVARIA,
